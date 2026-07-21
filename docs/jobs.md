@@ -1,70 +1,16 @@
-# SOBIS SOLUTIONS S.R.L.
+# TRANSILVANIA HOLIDAY TRAVELS SRL
 
 ## Company Info
 
 | Field | Value |
 |-------|-------|
-| CIF | 12018818 |
+| CIF | 794572 |
 | Brand | SOBIS |
 | Status | activ |
-| Location | Sat Arpaşu de Sus, Comuna Arpaşu de Jos, Sibiu |
-| Website | [https://www.sobis.ro](https://www.sobis.ro) |
+| Location | Calea DUMBRAVII, 101, Municipiul Sibiu, Sibiu |
+| Website | [https://www.sobisturism.ro](https://www.sobisturism.ro) |
 | Last Scraped | 2026-07-21 |
 
-## Current Job Listings (9)
+## Current Job Listings (0)
 
-_Generated: 2026-07-21T15:27:07.191Z_
-
-### AJUTOR OSPATAR
-
-- **URL:** [https://mediere.anofm.ro/app/module/mediere/job/3323632](https://mediere.anofm.ro/app/module/mediere/job/3323632)
-- **Location:** România
-- **Status:** scraped
-
-### GAZDA CLUB
-
-- **URL:** [https://mediere.anofm.ro/app/module/mediere/job/3302059](https://mediere.anofm.ro/app/module/mediere/job/3302059)
-- **Location:** România
-- **Status:** scraped
-
-### BUCATAR
-
-- **URL:** [https://mediere.anofm.ro/app/module/mediere/job/3298179](https://mediere.anofm.ro/app/module/mediere/job/3298179)
-- **Location:** România
-- **Status:** scraped
-
-### PROGRAMATOR
-
-- **URL:** [https://mediere.anofm.ro/app/module/mediere/job/3294742](https://mediere.anofm.ro/app/module/mediere/job/3294742)
-- **Location:** România
-- **Status:** scraped
-
-### MUNCITOR PISCICOL
-
-- **URL:** [https://mediere.anofm.ro/app/module/mediere/job/3282114](https://mediere.anofm.ro/app/module/mediere/job/3282114)
-- **Location:** România
-- **Status:** scraped
-
-### AJUTOR BUCATAR
-
-- **URL:** [https://mediere.anofm.ro/app/module/mediere/job/3268836](https://mediere.anofm.ro/app/module/mediere/job/3268836)
-- **Location:** România
-- **Status:** scraped
-
-### AJUTOR OSPATAR
-
-- **URL:** [https://mediere.anofm.ro/app/module/mediere/job/3268831](https://mediere.anofm.ro/app/module/mediere/job/3268831)
-- **Location:** România
-- **Status:** scraped
-
-### BUCATAR
-
-- **URL:** [https://mediere.anofm.ro/app/module/mediere/job/3268827](https://mediere.anofm.ro/app/module/mediere/job/3268827)
-- **Location:** România
-- **Status:** scraped
-
-### OSPATAR (CHELNER)
-
-- **URL:** [https://mediere.anofm.ro/app/module/mediere/job/3268822](https://mediere.anofm.ro/app/module/mediere/job/3268822)
-- **Location:** România
-- **Status:** scraped
+_Generated: 2026-07-21T15:47:12.626Z_
