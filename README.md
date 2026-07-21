@@ -1,29 +1,29 @@
-# job_seeker_ro_spider — SOBIS SOLUTIONS Romania Scraper
+# job_seeker_ro_spider — SOBIS TURISM Romania Scraper
 
-[![Oportunitati SI Cariere](https://github.com/sebiboga/sobis-solutions-srl-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml/badge.svg)](https://github.com/sebiboga/sobis-solutions-srl-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml)
-[![Automation Tests](https://github.com/sebiboga/sobis-solutions-srl-nodejs-scraper/actions/workflows/automation-testing.yml/badge.svg)](https://github.com/sebiboga/sobis-solutions-srl-nodejs-scraper/actions/workflows/automation-testing.yml)
+[![Oportunitati SI Cariere](https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml/badge.svg)](https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml)
+[![Automation Tests](https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/automation-testing.yml/badge.svg)](https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/automation-testing.yml)
 
-[![Version](https://img.shields.io/github/package-json/v/sebiboga/sobis-solutions-srl-nodejs-scraper?label=version&color=blue)](CHANGELOG.md)
-[![Test Results](https://img.shields.io/badge/test--results-HTML-9b59b6)](https://sebiboga.github.io/sobis-solutions-srl-nodejs-scraper/test-results/)
+[![Version](https://img.shields.io/github/package-json/v/sebiboga/sobis-turism-nodejs-scraper?label=version&color=blue)](CHANGELOG.md)
+[![Test Results](https://img.shields.io/badge/test--results-HTML-9b59b6)](https://sebiboga.github.io/sobis-turism-nodejs-scraper/test-results/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![JavaScript](https://img.shields.io/badge/javascript-ESM-F7DF1E?logo=javascript&logoColor=black)](https://ecma-international.org/)
 [![Node.js](https://img.shields.io/badge/node-24-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fpeviitor.ro&label=peviitor.ro)](https://peviitor.ro)
 [![API](https://img.shields.io/website?url=https%3A%2F%2Fapi.peviitor.ro%2F&label=api.peviitor.ro)](https://api.peviitor.ro/)
 [![SOLR](https://img.shields.io/website?url=https%3A%2F%2Fsolr.peviitor.ro%2Fsolr%2F&label=solr.peviitor.ro)](https://solr.peviitor.ro/solr/)
-[![GitHub Pages](https://img.shields.io/github/deployments/sebiboga/sobis-solutions-srl-nodejs-scraper/github-pages?label=GitHub%20Pages)](https://sebiboga.github.io/sobis-solutions-srl-nodejs-scraper/)
+[![GitHub Pages](https://img.shields.io/github/deployments/sebiboga/sobis-turism-nodejs-scraper/github-pages?label=GitHub%20Pages)](https://sebiboga.github.io/sobis-turism-nodejs-scraper/)
 
-**job_seeker_ro_spider** — un scraper pentru job-urile SOBIS SOLUTIONS din România. Extrage anunțurile de pe [ANOFM](https://anofm.ro) (API public filtrat pe CIF) și le publică în [peviitor.ro](https://peviitor.ro) prin API-ul SOLR.
+**job_seeker_ro_spider** — un scraper pentru job-urile SOBIS TURISM din România. Extrage anunțurile de pe [ANOFM](https://anofm.ro) (API public filtrat pe CIF) și le publică în [peviitor.ro](https://peviitor.ro) prin API-ul SOLR.
 
 > **🌱 Derived scraper.** Acest repo este derivat din [EPAM template](https://github.com/sebiboga/epam-systems-international-srl-nodejs-scraper). Toate scraper-ele Node.js din ecosistemul peviitor.ro sunt derivate din acest pattern.
 >
-> **📋 Companie:** SOBIS SOLUTIONS S.R.L. (CIF: 12018818)
+> **📋 Companie:** SC TRANSILVANIA HOLIDAY TRAVELS SRL (CIF: 794572)
 >
 > **🌐 Sursă:** ANOFM public API (`/api/entity/vw_public_job_posting`) filtrat pe CIF
 
 ## Overview
 
-Proiectul automatizează colectarea zilnică a job-urilor SOBIS SOLUTIONS din România, menținând board-ul peviitor.ro la zi cu cele mai recente oportunități de carieră.
+Proiectul automatizează colectarea zilnică a job-urilor SOBIS TURISM din România, menținând board-ul peviitor.ro la zi cu cele mai recente oportunități de carieră.
 
 ## Features
 
@@ -129,11 +129,11 @@ The `automation-testing.yml` workflow runs on every push and pull request.
 
 | Field | Value |
 |-------|-------|
-| CUI/CIF | 12018818 |
-| Legal Name | SOBIS SOLUTIONS S.R.L. |
+| CUI/CIF | 794572 |
+| Legal Name | SC TRANSILVANIA HOLIDAY TRAVELS SRL |
 | Brand | SOBIS |
 | Group | TSS (Total Specific Solutions) |
-| Website | https://www.sobis.ro |
+| Website | https://www.sobisturism.ro |
 | Data Source | ANOFM public API |
 | Owner | Martin Müller |
 

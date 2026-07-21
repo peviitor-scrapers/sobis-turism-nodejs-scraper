@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-07-21
 
 ### Added
-- Initial release of SOBIS SOLUTIONS S.R.L. scraper (CIF 12018818)
+- Initial release of SOBIS TURISM scraper (CIF 794572)
 - Job scraping from ANOFM public API (filtered by CIF)
 - Company validation via ANAF
 - Solr integration for job storage

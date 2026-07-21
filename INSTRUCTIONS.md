@@ -2,9 +2,9 @@
 
 ## Project Purpose
 
-This scraper extracts job listings from SOBIS SOLUTIONS S.R.L. via the ANOFM public API and imports them to peviitor.ro.
+This scraper extracts job listings from SC TRANSILVANIA HOLIDAY TRAVELS SRL via the ANOFM public API and imports them to peviitor.ro.
 
-Target: ANOFM public API (`/api/entity/vw_public_job_posting`) filtered by CIF 12018818
+Target: ANOFM public API (`/api/entity/vw_public_job_posting`) filtered by CIF 794572
 
 ## Model Schemas
 
@@ -71,7 +71,7 @@ node index.js
 node index.js --test
 ```
 
-> **Important**: Scraper does NOT delete jobs from other sources. It only upserts SOBIS SOLUTIONS jobs from ANOFM. Existing jobs are preserved.
+> **Important**: Scraper does NOT delete jobs from other sources. It only upserts SOBIS TURISM jobs from ANOFM. Existing jobs are preserved.
 
 ## Full Workflow (automatic)
 
@@ -137,7 +137,7 @@ generateJobsMarkdown() → docs/jobs.md
 | `src/markdown-generator.js` | Generates `docs/jobs.md` with company info and all scraped jobs |
 | `src/job-validator.js` | Shared validation primitives: `validateByHead`, `validateByContent`, `DEFAULT_EXPIRED_KEYWORDS` |
 | `demoanaf.js` | CLI entry point for ANAF module (thin wrapper around src/anaf.js) |
-| `tests/validate-sobis-solutions-jobs.js` | CI fast validator (HEAD only); thin CLI over `src/job-validator.js` + `solr.js` |
+| `tests/validate-sobis-turism-jobs.js` | CI fast validator (HEAD only); thin CLI over `src/job-validator.js` + `solr.js` |
 | `tests/unit/index.test.js` | Unit tests for parseAnofmJobs, mapToJobModel, transformJobsForSOLR |
 | `tests/unit/company.test.js` | Unit tests for validateAndGetCompany and fallback caching |
 | `tests/unit/solr.test.js` | Unit tests for SOLR query, upsert, delete operations |

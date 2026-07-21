@@ -6,7 +6,7 @@ Source: [peviitor_core](https://github.com/peviitor-ro/peviitor_core)
 
 | Field   | Type   | Description |
 |---------|--------|-------------|
-| id      | string | CIF/CUI of the company (e.g. "12018818"). Exact CIF/CUI 8 digits, no RO prefix |
+| id      | string | CIF/CUI of the company (e.g. "794572"). Exact CIF/CUI 8 digits, no RO prefix |
 | company | string | Exact name for job matching. Legal name from Trade Register. DIACRITICS REQUIRED. Use uppercase |
 
 ## Optional Fields

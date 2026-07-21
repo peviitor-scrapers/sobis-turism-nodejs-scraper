@@ -29,8 +29,8 @@ function errorResponse(status) {
 }
 
 const ANRAF_RECORD = {
-  cui: 12018818,
-  name: 'SOBIS SOLUTIONS S.R.L.',
+  cui: 794572,
+  name: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL',
   address: 'Sat Arpaşu de Sus, Comuna Arpaşu de Jos, Sibiu',
   caenCode: '6201',
   inactive: false,
@@ -43,8 +43,8 @@ const ANRAF_RECORD = {
 };
 
 const CACHED_DATA = {
-  cui: 12018818,
-  name: 'SOBIS SOLUTIONS S.R.L.',
+  cui: 794572,
+  name: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL',
   address: 'Sat Arpaşu de Sus, Comuna Arpaşu de Jos, Sibiu',
   registrationNumber: 'J32/2018/2024',
   caenCode: '6201',
@@ -68,7 +68,7 @@ describe('src/anaf.js', () => {
   describe('searchCompany', () => {
     it('should return array of companies for valid brand', async () => {
       mockFetch.mockResolvedValue(anafSearchResponse([
-        { cui: 12018818, name: 'SOBIS SOLUTIONS S.R.L.', statusLabel: 'Funcțiune' }
+        { cui: 794572, name: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL', statusLabel: 'Funcțiune' }
       ]));
 
       const results = await anaf.searchCompany('SOBIS');
@@ -90,7 +90,7 @@ describe('src/anaf.js', () => {
 
     it('should include statusLabel in results', async () => {
       mockFetch.mockResolvedValue(anafSearchResponse([
-        { cui: 12018818, name: 'SOBIS SOLUTIONS S.R.L.', statusLabel: 'Funcțiune' }
+        { cui: 794572, name: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL', statusLabel: 'Funcțiune' }
       ]));
 
       const results = await anaf.searchCompany('SOBIS');
@@ -120,11 +120,11 @@ describe('src/anaf.js', () => {
     it('should return company data for valid CIF', async () => {
       mockFetch.mockResolvedValue(anafCompanyResponse(ANRAF_RECORD));
 
-      const data = await anaf.getCompanyFromANAF('12018818');
+      const data = await anaf.getCompanyFromANAF('794572');
 
       expect(data).toBeDefined();
-      expect(data.cui).toBe(12018818);
-      expect(data.name).toBe('SOBIS SOLUTIONS S.R.L.');
+      expect(data.cui).toBe(794572);
+      expect(data.name).toBe('SC TRANSILVANIA HOLIDAY TRAVELS SRL');
       expect(data).toHaveProperty('address');
       expect(data).toHaveProperty('registrationNumber');
     });
@@ -134,17 +134,17 @@ describe('src/anaf.js', () => {
         .mockResolvedValueOnce(errorResponse(500))
         .mockResolvedValueOnce(anafCompanyResponse(ANRAF_RECORD));
 
-      const data = await anaf.getCompanyFromANAF('12018818');
+      const data = await anaf.getCompanyFromANAF('794572');
 
       expect(data).toBeDefined();
-      expect(data.cui).toBe(12018818);
+      expect(data.cui).toBe(794572);
       expect(mockFetch).toHaveBeenCalledTimes(2);
     });
 
     it('should throw after exhausting retries', async () => {
       mockFetch.mockResolvedValue(errorResponse(500));
 
-      await expect(anaf.getCompanyFromANAF('12018818')).rejects.toThrow();
+      await expect(anaf.getCompanyFromANAF('794572')).rejects.toThrow();
       expect(mockFetch).toHaveBeenCalledTimes(3);
     });
 
@@ -160,7 +160,7 @@ describe('src/anaf.js', () => {
     it('should return null when data is null', async () => {
       mockFetch.mockResolvedValue(anafCompanyResponse(null));
 
-      const data = await anaf.getCompanyFromANAF('12018818');
+      const data = await anaf.getCompanyFromANAF('794572');
       expect(data).toBeNull();
     });
   });
@@ -169,15 +169,15 @@ describe('src/anaf.js', () => {
     it('should return fresh data when API works', async () => {
       mockFetch.mockResolvedValue(anafCompanyResponse(ANRAF_RECORD));
 
-      const data = await anaf.getCompanyFromANAFWithFallback('12018818');
+      const data = await anaf.getCompanyFromANAFWithFallback('794572');
 
-      expect(data.name).toBe('SOBIS SOLUTIONS S.R.L.');
+      expect(data.name).toBe('SC TRANSILVANIA HOLIDAY TRAVELS SRL');
     });
 
     it('should use cached data when API fails', async () => {
       mockFetch.mockResolvedValue(errorResponse(500));
 
-      const data = await anaf.getCompanyFromANAFWithFallback('12018818', CACHED_DATA);
+      const data = await anaf.getCompanyFromANAFWithFallback('794572', CACHED_DATA);
 
       expect(data).toEqual(CACHED_DATA);
     });
@@ -185,7 +185,7 @@ describe('src/anaf.js', () => {
     it('should throw when API fails and no cache available', async () => {
       mockFetch.mockResolvedValue(errorResponse(500));
 
-      await expect(anaf.getCompanyFromANAFWithFallback('12018818')).rejects.toThrow();
+      await expect(anaf.getCompanyFromANAFWithFallback('794572')).rejects.toThrow();
     });
   });
 });

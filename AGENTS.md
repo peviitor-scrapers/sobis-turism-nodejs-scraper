@@ -1,14 +1,14 @@
 # AGENTS.md — Rules for AI agents
 
 ## Project
-SOBIS SOLUTIONS scraper for peviitor.ro (Node.js, ESM, Jest)
+SOBIS TURISM scraper for peviitor.ro (Node.js, ESM, Jest)
 
 ## 🌱 This Repo Is a Derived Scraper
 This repo is derived from the [EPAM template](https://github.com/sebiboga/epam-systems-international-srl-nodejs-scraper).
 
 **All company-specific identity lives in `config/company.json`** (CIF, brand, legalName, URLs). Read from `config/company.js` in Node code, or via `jq` in workflows.
 
-The scraping logic in `index.js` queries the ANOFM public API (`/api/entity/vw_public_job_posting`) filtered by CIF to fetch job listings. SOBIS SOLUTIONS has no public careers page — ANOFM is the sole data source.
+The scraping logic in `index.js` queries the ANOFM public API (`/api/entity/vw_public_job_posting`) filtered by CIF to fetch job listings. SOBIS TURISM has no public careers page — ANOFM is the sole data source.
 
 ## Critical Rules
 
@@ -16,7 +16,7 @@ The scraping logic in `index.js` queries the ANOFM public API (`/api/entity/vw_p
 
 When polling a workflow run, always specify the repo explicitly:
 ```bash
-gh run view <RUN_ID> --repo sebiboga/sobis-solutions-srl-nodejs-scraper --json status -q .status
+gh run view <RUN_ID> --repo sebiboga/sobis-turism-nodejs-scraper --json status -q .status
 ```
 
 ### 1. Temporary Files

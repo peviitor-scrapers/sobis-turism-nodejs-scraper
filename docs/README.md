@@ -1,8 +1,8 @@
 # job_seeker_ro_spider
 
-**job_seeker_ro_spider** — scraper pentru job-urile SOBIS SOLUTIONS din România.
+**job_seeker_ro_spider** — scraper pentru job-urile SOBIS TURISM din România.
 
-Extrage anunțurile de pe [ANOFM](https://anofm.ro) (API public filtrat pe CIF 12018818) și le publică în [peviitor.ro](https://peviitor.ro) prin API-ul SOLR.
+Extrage anunțurile de pe [ANOFM](https://anofm.ro) (API public filtrat pe CIF 794572) și le publică în [peviitor.ro](https://peviitor.ro) prin API-ul SOLR.
 
 ## Identificare
 
@@ -14,15 +14,15 @@ job_seeker_ro_spider
 
 ## Ce face
 
-1. **Validează compania** — interoghează API-ul public ANAF ([demoanaf.ro](https://demoanaf.ro)) după CIF-ul SOBIS SOLUTIONS (12018818) și verifică:
-   - Denumirea oficială: SOBIS SOLUTIONS S.R.L.
+1. **Validează compania** — interoghează API-ul public ANAF ([demoanaf.ro](https://demoanaf.ro)) după CIF-ul SOBIS TURISM (794572) și verifică:
+   - Denumirea oficială: SC TRANSILVANIA HOLIDAY TRAVELS SRL
    - Status: activ/inactiv/radiat
    - Adresa completă din registrul comerțului
 2. **Cross-validează cu Peviitor** — verifică existența companiei în API-ul Peviitor
 3. **Scrape-uiește job-urile** — interoghează API-ul public ANOFM filtrat pe CIF
 4. **Transformă datele** — normalizează locațiile (doar orașe românești), tag-urile (lowercase), workmode-ul (remote/on-site/hybrid)
 5. **Stochează în SOLR** — upsert în `job` core (job-urile) și `company` core (datele companiei cu adresa completă)
-6. **Generează docs/jobs.md** — fișier markdown cu informații companie + toate job-urile curente, publicat pe [GitHub Pages](https://sebiboga.github.io/sobis-solutions-srl-nodejs-scraper/jobs.md)
+6. **Generează docs/jobs.md** — fișier markdown cu informații companie + toate job-urile curente, publicat pe [GitHub Pages](https://sebiboga.github.io/sobis-turism-nodejs-scraper/jobs.md)
 
 ## Structură proiect
 
@@ -59,7 +59,7 @@ job_seeker_ro_spider
 
 ## Robots.txt
 
-SOBIS SOLUTIONS nu are o pagină publică de cariere. Scraperul folosește API-ul public ANOFM — un serviciu guvernamental, fără restricții.
+SOBIS TURISM nu are o pagină publică de cariere. Scraperul folosește API-ul public ANOFM — un serviciu guvernamental, fără restricții.
 
 Pentru analiza completă, vezi [ROBOTS.md](../ROBOTS.md).
 

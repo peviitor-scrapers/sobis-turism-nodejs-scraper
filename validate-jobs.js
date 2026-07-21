@@ -9,8 +9,8 @@
  * SCOPE: Generic — works with ANY CIF, single URL, or list from file.
  * Used for ad-hoc cleanup and debugging. NOT called from CI.
  *
- * For the fast CI-friendly SOBIS SOLUTIONS HEAD check, see
- * tests/validate-sobis-solutions-jobs.js.
+ * For the fast CI-friendly SOBIS TURISM HEAD check, see
+ * tests/validate-sobis-turism-jobs.js.
  *
  * Usage:
  *   node validate-jobs.js <CIF>                   - Query Solr and validate all jobs for a CIF
@@ -135,7 +135,7 @@ Usage:
   node validate-jobs.js --file <file.json>       - Check URLs from JSON file
 
 Examples:
-  node validate-jobs.js 12018818                 - Validate SOBIS SOLUTIONS jobs
+  node validate-jobs.js 794572                 - Validate SOBIS TURISM jobs
   node validate-jobs.js --url "https://www.sobis.ro/job/123_test"
   node validate-jobs.js --urls "url1" "url2" "url3"
   node validate-jobs.js --file jobs.json

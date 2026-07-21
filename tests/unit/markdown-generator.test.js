@@ -1,13 +1,13 @@
 import { generateJobsMarkdown } from "../../src/markdown-generator.js";
 
 const baseCompany = {
-  id: "12018818",
-  company: "SOBIS SOLUTIONS S.R.L.",
+  id: "794572",
+  company: "SC TRANSILVANIA HOLIDAY TRAVELS SRL",
   brand: "SOBIS",
   group: "Total Specific Solutions",
   status: "activ",
   location: ["Sibiu"],
-  website: ["https://www.sobis.ro"],
+  website: ["https://www.sobisturism.ro"],
   lastScraped: "2026-07-21"
 };
 
@@ -24,12 +24,12 @@ describe("generateJobsMarkdown", () => {
   describe("company section", () => {
     it("includes company name as h1", () => {
       const md = generateJobsMarkdown(baseCompany, []);
-      expect(md).toContain("# SOBIS SOLUTIONS S.R.L.");
+      expect(md).toContain("# SC TRANSILVANIA HOLIDAY TRAVELS SRL");
     });
 
     it("includes CIF", () => {
       const md = generateJobsMarkdown(baseCompany, []);
-      expect(md).toContain("12018818");
+      expect(md).toContain("794572");
     });
 
     it("includes brand", () => {
@@ -44,7 +44,7 @@ describe("generateJobsMarkdown", () => {
 
     it("includes website as markdown link", () => {
       const md = generateJobsMarkdown(baseCompany, []);
-      expect(md).toContain("[https://www.sobis.ro](https://www.sobis.ro)");
+      expect(md).toContain("[https://www.sobisturism.ro](https://www.sobisturism.ro)");
     });
 
     it("includes lastScraped date", () => {
@@ -53,9 +53,9 @@ describe("generateJobsMarkdown", () => {
     });
 
     it("omits optional fields when not present", () => {
-      const minimal = { id: "12018818", company: "SOBIS SOLUTIONS S.R.L." };
+      const minimal = { id: "794572", company: "SC TRANSILVANIA HOLIDAY TRAVELS SRL" };
       const md = generateJobsMarkdown(minimal, []);
-      expect(md).toContain("# SOBIS SOLUTIONS S.R.L.");
+      expect(md).toContain("# SC TRANSILVANIA HOLIDAY TRAVELS SRL");
       expect(md).not.toContain("Brand");
       expect(md).not.toContain("Last Scraped");
     });

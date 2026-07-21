@@ -1,66 +1,88 @@
 {
-  "validatedAt": "2026-07-21T15:24:51.854Z",
+  "validatedAt": "2026-07-21T15:44:39.949Z",
   "source": "ANAF",
   "brand": "SOBIS",
   "anaf": {
-    "cui": 12018818,
-    "name": "SOBIS SOLUTIONS S.R.L.",
-    "address": "Sat Arpaşu de Sus, Comuna Arpaşu de Jos, Sibiu",
-    "registrationNumber": "J32/2018/2024",
-    "phone": "",
+    "cui": 794572,
     "fax": "",
-    "postalCode": "",
-    "caenCode": "6201",
     "iban": "",
-    "registrationState": "INREGISTRAT",
-    "registrationDate": "2024-01-01",
-    "fiscalAuthority": "AJFP Sibiu",
-    "ownershipForm": "PROPR.PRIVATA-CAPITAL PRIVAT AUTOHTON",
-    "organizationForm": "PERSOANA JURIDICA",
-    "legalForm": "SOCIETATE COMERCIALĂ CU RĂSPUNDERE LIMITATĂ",
-    "vatRegistered": true,
+    "name": "TRANSILVANIA HOLIDAY TRAVELS SRL",
+    "phone": "",
+    "address": "Calea DUMBRAVII, 101, Municipiul Sibiu, Sibiu",
+    "caenCode": "7911",
+    "inactive": false,
+    "splitVat": false,
+    "legalForm": "SRL",
+    "postalCode": "   2400",
     "vatPeriods": [
       {
-        "start": "2024-01-01",
         "end": null,
-        "yearStart": "",
-        "message": ""
+        "start": "2000-11-01",
+        "message": "",
+        "yearStart": ""
       }
     ],
     "cashBasisVat": false,
-    "cashBasisVatStart": null,
-    "cashBasisVatEnd": null,
-    "inactive": false,
-    "inactiveSince": null,
-    "reactivatedSince": null,
-    "splitVat": false,
-    "eFacturaRegistered": false,
-    "headquartersAddress": {
-      "street": "",
+    "fiscalAddress": {
+      "county": "",
       "number": "",
-      "locality": "Sat Arpaşu de Sus, Comuna Arpaşu de Jos",
+      "street": "",
+      "country": "",
+      "locality": "",
+      "postalCode": ""
+    },
+    "inactiveSince": null,
+    "ownershipForm": "PROPR.PRIVATA-CAPITAL PRIVAT AUTOHTON",
+    "vatRegistered": true,
+    "cashBasisVatEnd": "2025-02-01",
+    "fiscalAuthority": "Administraţia Judeţeană a Finanţelor Publice Sibiu",
+    "organizationForm": "PERSOANA JURIDICA",
+    "reactivatedSince": null,
+    "registrationDate": "15/04/1992",
+    "cashBasisVatStart": "2013-01-01",
+    "registrationState": "INREGISTRAT din data 30.11.1992",
+    "eFacturaRegistered": true,
+    "registrationNumber": "J1992001000321",
+    "headquartersAddress": {
+      "street": "Calea DUMBRAVII",
+      "number": "101",
+      "locality": "Municipiul Sibiu",
       "county": "Sibiu",
       "country": "România",
-      "postalCode": ""
+      "postalCode": "   2400"
     },
-    "fiscalAddress": {
-      "street": "",
-      "number": "",
-      "locality": "",
-      "county": "",
-      "country": "",
-      "postalCode": ""
-    },
-    "administrators": [],
+    "administrators": [
+      {
+        "id": 7256533,
+        "name": "LAZĂR GEORGE RADU",
+        "role": "administrator",
+        "personId": 2283225,
+        "gdprHidden": false
+      }
+    ],
     "authorizedCaenCodes": [
-      "6201",
-      "6202",
-      "6209",
-      "6311",
-      "6312"
+      "5221",
+      "5232",
+      "5540",
+      "5611",
+      "5612",
+      "5621",
+      "5622",
+      "5640",
+      "7020",
+      "7330",
+      "7751",
+      "7911",
+      "7912",
+      "7990",
+      "8240",
+      "9329"
     ],
     "onrcStatus": 1048,
-    "onrcStatusLabel": "Funcțiune"
+    "onrcStatusLabel": "Funcțiune",
+    "vatCheckedAt": "2026-07-17T10:45:31.035Z",
+    "vatStatus": "fresh",
+    "datoriiAnaf": null
   },
   "peviitor": {
     "id": "52200796",
@@ -83,15 +105,15 @@
     "_root_": "52200796"
   },
   "summary": {
-    "company": "SOBIS SOLUTIONS S.R.L.",
-    "cif": "12018818",
+    "company": "TRANSILVANIA HOLIDAY TRAVELS SRL",
+    "cif": "794572",
     "active": true,
     "inactiveSince": null,
     "reactivatedSince": null,
-    "address": "Sat Arpaşu de Sus, Comuna Arpaşu de Jos, Sibiu",
-    "registrationNumber": "J32/2018/2024",
-    "caenCode": "6201",
+    "address": "Calea DUMBRAVII, 101, Municipiul Sibiu, Sibiu",
+    "registrationNumber": "J1992001000321",
+    "caenCode": "7911",
     "vatRegistered": true,
-    "eFacturaRegistered": false
+    "eFacturaRegistered": true
   }
 }

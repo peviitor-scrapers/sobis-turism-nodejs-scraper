@@ -75,7 +75,7 @@ describe("Repository Configuration", () => {
       expect(html).toContain("<!DOCTYPE html>");
       expect(html).toContain("peviitor");
       expect(html).toContain("SOBIS");
-      expect(html).toContain("sobis.ro");
+      expect(html).toContain("sobisturism.ro");
       console.log(`✅ GitHub Pages HTML loaded from ${pagesUrl}`);
     });
   });

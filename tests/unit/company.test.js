@@ -50,8 +50,8 @@ function solrResponse(numFound, docs) {
 }
 
 const SOBIS_ANAF_RECORD = {
-  cui: 12018818,
-  name: 'SOBIS SOLUTIONS S.R.L.',
+  cui: 794572,
+  name: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL',
   address: 'Sat Arpaşu de Sus, Comuna Arpaşu de Jos, Sibiu',
   caenCode: '6201',
   inactive: false,
@@ -83,16 +83,16 @@ describe('company.js', () => {
   });
 
   describe('getCompanyData (no cache)', () => {
-    it('should fetch SOBIS SOLUTIONS via direct CIF lookup and return company data', async () => {
+    it('should fetch SOBIS TURISM via direct CIF lookup and return company data', async () => {
       mockFetch.mockResolvedValueOnce(anafCompanyResponse(SOBIS_ANAF_RECORD));
 
       const result = await company.getCompanyData();
 
-      expect(result).toHaveProperty('company', 'SOBIS SOLUTIONS S.R.L.');
-      expect(result).toHaveProperty('cif', '12018818');
+      expect(result).toHaveProperty('company', 'SC TRANSILVANIA HOLIDAY TRAVELS SRL');
+      expect(result).toHaveProperty('cif', '794572');
       expect(result).toHaveProperty('active', true);
       expect(result).toHaveProperty('anafData');
-      expect(result.anafData.name).toBe('SOBIS SOLUTIONS S.R.L.');
+      expect(result.anafData.name).toBe('SC TRANSILVANIA HOLIDAY TRAVELS SRL');
     });
 
     it('should throw when ANAF returns no data', async () => {
@@ -102,7 +102,7 @@ describe('company.js', () => {
     });
 
     it('should throw when ANAF returns no company name', async () => {
-      mockFetch.mockResolvedValueOnce(anafCompanyResponse({ cui: 12018818, name: null }));
+      mockFetch.mockResolvedValueOnce(anafCompanyResponse({ cui: 794572, name: null }));
 
       await expect(company.getCompanyData()).rejects.toThrow('ANAF returned no company name');
     });
@@ -113,8 +113,8 @@ describe('company.js', () => {
       validatedAt: new Date().toISOString(),
       anaf: SOBIS_ANAF_RECORD,
       summary: {
-        company: 'SOBIS SOLUTIONS S.R.L.',
-        cif: '12018818',
+        company: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL',
+        cif: '794572',
         active: true
       }
     };
@@ -126,8 +126,8 @@ describe('company.js', () => {
     it('should use cached company data when available', async () => {
       const result = await company.getCompanyData();
 
-      expect(result.company).toBe('SOBIS SOLUTIONS S.R.L.');
-      expect(result.cif).toBe('12018818');
+      expect(result.company).toBe('SC TRANSILVANIA HOLIDAY TRAVELS SRL');
+      expect(result.cif).toBe('794572');
       expect(result.active).toBe(true);
       expect(mockFetch).not.toHaveBeenCalled();
     });
@@ -145,13 +145,13 @@ describe('company.js', () => {
           { url: 'https://test.com/1', title: 'Job 1' },
           { url: 'https://test.com/2', title: 'Job 2' }
         ]))
-        .mockResolvedValueOnce(peviitorResponse([{ company: 'SOBIS SOLUTIONS S.R.L.' }]));
+        .mockResolvedValueOnce(peviitorResponse([{ company: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL' }]));
 
       const result = await company.validateAndGetCompany();
 
       expect(result).toHaveProperty('status', 'active');
-      expect(result).toHaveProperty('company', 'SOBIS SOLUTIONS S.R.L.');
-      expect(result).toHaveProperty('cif', '12018818');
+      expect(result).toHaveProperty('company', 'SC TRANSILVANIA HOLIDAY TRAVELS SRL');
+      expect(result).toHaveProperty('cif', '794572');
       expect(result).toHaveProperty('existingJobsCount');
       expect(typeof result.existingJobsCount).toBe('number');
     });

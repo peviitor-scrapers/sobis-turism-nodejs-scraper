@@ -29,7 +29,7 @@ describe('index.js Component Tests', () => {
         })
       });
 
-      const jobs = await index.searchANOFM('12018818', true);
+      const jobs = await index.searchANOFM('794572', true);
 
       expect(jobs).toHaveLength(2);
       expect(jobs[0]).toHaveProperty('url', 'https://mediere.anofm.ro/app/module/mediere/job/1001');
@@ -57,14 +57,14 @@ describe('index.js Component Tests', () => {
         status: 500
       });
 
-      const jobs = await index.searchANOFM('12018818', true);
+      const jobs = await index.searchANOFM('794572', true);
       expect(jobs).toEqual([]);
     });
 
     it('should handle network error gracefully', async () => {
       mockFetch.mockRejectedValueOnce(new Error('network down'));
 
-      const jobs = await index.searchANOFM('12018818', true);
+      const jobs = await index.searchANOFM('794572', true);
       expect(jobs).toEqual([]);
     });
 
@@ -78,7 +78,7 @@ describe('index.js Component Tests', () => {
         })
       });
 
-      const jobs = await index.searchANOFM('12018818', true);
+      const jobs = await index.searchANOFM('794572', true);
       expect(jobs).toHaveLength(1);
       expect(jobs[0].location).toBeUndefined();
     });
@@ -100,7 +100,7 @@ describe('index.js Component Tests', () => {
           json: async () => ({ rows: [{ id: 251, occupation: 'Job 251', address_locality_name: 'Sibiu' }] })
         });
 
-      const jobs = await index.searchANOFM('12018818', false);
+      const jobs = await index.searchANOFM('794572', false);
       expect(jobs).toHaveLength(251);
       expect(mockFetch).toHaveBeenCalledTimes(2);
     });
@@ -116,8 +116,8 @@ describe('index.js Component Tests', () => {
         workmode: 'hybrid'
       };
 
-      const COMPANY_NAME = 'SOBIS SOLUTIONS S.R.L.';
-      const COMPANY_CIF = '12018818';
+      const COMPANY_NAME = 'SC TRANSILVANIA HOLIDAY TRAVELS SRL';
+      const COMPANY_CIF = '794572';
 
       const result = index.mapToJobModel(rawJob, COMPANY_CIF, COMPANY_NAME);
 
@@ -138,7 +138,7 @@ describe('index.js Component Tests', () => {
         title: 'Job 1'
       };
 
-      const result = index.mapToJobModel(rawJob, '12018818');
+      const result = index.mapToJobModel(rawJob, '794572');
 
       expect(result.location).toBeUndefined();
       expect(result.tags).toBeUndefined();
@@ -148,7 +148,7 @@ describe('index.js Component Tests', () => {
     it('should handle missing title', () => {
       const rawJob = { url: 'https://mediere.anofm.ro/app/module/mediere/job/1001' };
 
-      const result = index.mapToJobModel(rawJob, '12018818');
+      const result = index.mapToJobModel(rawJob, '794572');
 
       expect(result.title).toBeUndefined();
       expect(result.url).toBe('https://mediere.anofm.ro/app/module/mediere/job/1001');
@@ -161,7 +161,7 @@ describe('index.js Component Tests', () => {
         location: []
       };
 
-      const result = index.mapToJobModel(rawJob, '12018818');
+      const result = index.mapToJobModel(rawJob, '794572');
       expect(result.location).toBeUndefined();
     });
   });
@@ -190,16 +190,16 @@ describe('index.js Component Tests', () => {
     it('should keep company uppercase', () => {
       const payload = {
         source: 'anofm.ro',
-        company: 'sobis solutions s.r.l.',
-        cif: '12018818',
+        company: 'sc transilvania holiday travels srl',
+        cif: '794572',
         jobs: [
-          { url: 'https://test.com/1', title: 'Job 1', company: 'sobis solutions', cif: '12018818' }
+          { url: 'https://test.com/1', title: 'Job 1', company: 'sobis turism', cif: '794572' }
         ]
       };
 
       const result = index.transformJobsForSOLR(payload);
 
-      expect(result.company).toBe('SOBIS SOLUTIONS S.R.L.');
+      expect(result.company).toBe('SC TRANSILVANIA HOLIDAY TRAVELS SRL');
     });
 
     it('should normalize workmode values', () => {

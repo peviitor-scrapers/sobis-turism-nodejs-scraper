@@ -1,9 +1,9 @@
 /**
- * SOBIS SOLUTIONS Job Scraper - Main Entry Point
+ * SOBIS TURISM Job Scraper - Main Entry Point
  * 
  * PURPOSE: Scrapes job listings from ANOFM (Agentia Nationala pentru Ocuparea
- * Fortei de Munca) for SOBIS SOLUTIONS S.R.L. and stores them in Solr.
- * SOBIS SOLUTIONS has no public careers page — ANOFM API is the primary source.
+ * Fortei de Munca) for SC TRANSILVANIA HOLIDAY TRAVELS SRL and stores them in Solr.
+ * SOBIS TURISM has no public careers page — ANOFM API is the primary source.
  */
 
 import fetch from "node-fetch";
