@@ -9,8 +9,8 @@
 | Status | activ |
 | Location | Calea DUMBRAVII, 101, Municipiul Sibiu, Sibiu |
 | Website | [https://www.sobisturism.ro](https://www.sobisturism.ro) |
-| Last Scraped | 2026-07-22 |
+| Last Scraped | 2026-07-23 |
 
 ## Current Job Listings (0)
 
-_Generated: 2026-07-22T08:11:08.976Z_
+_Generated: 2026-07-23T08:15:09.567Z_
