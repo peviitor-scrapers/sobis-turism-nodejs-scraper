@@ -7,17 +7,17 @@
  *   node demoanaf.js search <brand>    - Search for companies
  *   node demoanaf.js <cif>             - Get company details by CIF
  * 
- * The core library is in src/anaf.js — this file only provides
+ * The core library is in scraper/anaf.js — this file only provides
  * the standalone CLI interface.
  */
 
-import { getCompanyFromANAF, searchCompany } from "./src/anaf.js";
+import { getCompanyFromANAF, searchCompany } from "./anaf.js";
 import companyConfig from "./config/company.js";
 
 const args = process.argv.slice(2);
 
 if (args[0] === "search") {
-  const brand = args[1] || companyConfig.brand;
+  const brand = args[1] || companyConfig.company;
   console.log(`=== Searching for: ${brand} ===\n`);
 
   searchCompany(brand)
@@ -32,7 +32,7 @@ if (args[0] === "search") {
       process.exit(1);
     });
 } else {
-  const cif = args[0] || companyConfig.cif;
+  const cif = args[0] || companyConfig.id;
   console.log(`=== Testing ANAF API for CIF: ${cif} ===\n`);
 
   getCompanyFromANAF(cif)

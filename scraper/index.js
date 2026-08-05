@@ -1,24 +1,22 @@
 /**
  * SOBIS TURISM Job Scraper - Main Entry Point
- * 
+ *
  * PURPOSE: Scrapes job listings from ANOFM (Agentia Nationala pentru Ocuparea
- * Fortei de Munca) for SC TRANSILVANIA HOLIDAY TRAVELS SRL and stores them in Solr.
- * SOBIS TURISM has no public careers page — ANOFM API is the primary source.
+ * Fortei de Munca) for SC TRANSILVANIA HOLIDAY TRAVELS SRL and stores them via
+ * the peviitor API. SOBIS TURISM has no public careers page — ANOFM API is the
+ * primary (and only) source.
  */
 
 import fetch from "node-fetch";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { validateAndGetCompany } from "./company.js";
-import { querySOLR, deleteJobByUrl, upsertJobs, upsertCompany } from "./solr.js";
-import { generateJobsMarkdown } from "./src/markdown-generator.js";
+import { querySOLR, upsertJobs, upsertCompany, deleteJobByUrl } from "./api.js";
+import { generateJobsMarkdown } from "./markdown-generator.js";
 import companyConfig from "./config/company.js";
+import scraperConfig from "./config/scraper.js";
 
-// ============================================================================
-// CONFIGURATION CONSTANTS — derived from config/company.json
-// ============================================================================
-
-const COMPANY_CIF = companyConfig.cif;
+const COMPANY_CIF = companyConfig.id;
 
 // Request timeout in milliseconds (10 seconds, per INSTRUCTIONS.md)
 const TIMEOUT = 10000;
@@ -47,7 +45,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * @param {boolean} testOnlyOnePage - If true, limits to first page only (for testing)
  * @returns {Promise<Array>} - Array of job objects { url, title, location, source }
  */
-async function searchANOFM(cif, testOnlyOnePage = false) {
+export async function searchANOFM(cif, testOnlyOnePage = false) {
   const jobs = [];
   let current = 1;
   const rowCount = 250;
@@ -62,7 +60,7 @@ async function searchANOFM(cif, testOnlyOnePage = false) {
         sort: { created_at: "desc" },
         employer_tax_code: cif
       };
-      const res = await fetch("https://mediere.anofm.ro/api/entity/vw_public_job_posting", {
+      const res = await fetch(`${scraperConfig.apiBase}/api/entity/vw_public_job_posting`, {
         method: "POST",
         timeout: TIMEOUT,
         headers: {
@@ -114,7 +112,7 @@ async function searchANOFM(cif, testOnlyOnePage = false) {
  * @param {string} companyName - Company name
  * @returns {Object} - Job object ready for Solr storage
  */
-function mapToJobModel(rawJob, cif, companyName = COMPANY_NAME || companyConfig.legalName) {
+export function mapToJobModel(rawJob, cif, companyName = COMPANY_NAME) {
   const now = new Date().toISOString();
 
   const job = {
@@ -140,7 +138,7 @@ function mapToJobModel(rawJob, cif, companyName = COMPANY_NAME || companyConfig.
  * @param {Object} payload - Job payload with jobs array
  * @returns {Object} - Transformed payload ready for Solr
  */
-function transformJobsForSOLR(payload) {
+export function transformJobsForSOLR(payload) {
   // List of Romanian cities for location validation
   const romanianCities = [
     'Bucharest', 'București', 'Cluj-Napoca', 'Cluj Napoca',
@@ -191,96 +189,72 @@ function transformJobsForSOLR(payload) {
 // MAIN ORCHESTRATION - Coordinates the entire scraping workflow
 // ============================================================================
 
-/**
- * Main function that orchestrates the complete scraping workflow:
- * 1. Check existing jobs in Solr
- * 2. Validate company via ANAF
- * 3. Scrape jobs from ANOFM API
- * 4. Transform data for Solr
- * 5. Upsert jobs to Solr
- * 6. Report summary
- */
 async function main() {
   const testOnlyOnePage = process.argv.includes("--test");
 
   try {
-    fs.mkdirSync("tmp", { recursive: true });
+    fs.mkdirSync("scraper", { recursive: true });
 
-    // Step 1: Get count of existing jobs in Solr
-    console.log("=== Step 1: Get existing jobs count ===");
+    console.log("=== Step 1: Get existing jobs from SOLR ===");
     const existingResult = await querySOLR(COMPANY_CIF);
     const existingCount = existingResult.numFound;
+    const existingUrls = new Set(existingResult.docs.map(doc => doc.url).filter(Boolean));
     console.log(`Found ${existingCount} existing jobs in SOLR`);
 
-    // Step 2: Validate company data via ANAF
     console.log("=== Step 2: Validate company via ANAF ===");
-    const { status, company, cif, address } = await validateAndGetCompany();
+    const { company, cif, address, status } = await validateAndGetCompany();
     COMPANY_NAME = company;
-    const localCif = cif;
-
-    // If company is inactive, jobs were already deleted by company.js — STOP
-    if (status === "inactive") {
-      console.log("\n⛔ Company is INACTIVE in ANAF — scraper stopping (no jobs to scrape)");
+    if (status === 'inactive') {
+      console.log("⚠️ Company is INACTIVE — jobs deleted, skipping scrape.");
       return;
     }
 
-    // Upsert company to SOLR company core
     try {
       await upsertCompany({
         id: cif,
         company,
-        group: companyConfig.group,
-        brand: companyConfig.brand,
-        status: "activ",
-        location: address ? [address] : [companyConfig.defaultLocation],
-        website: [companyConfig.website],
-        lastScraped: new Date().toISOString().split('T')[0],
-        scraperFile: companyConfig.scraperFile
+        brand: companyConfig.brand || undefined,
+        status: status === 'active' ? 'activ' : (status || "activ"),
+        location: address ? [address] : companyConfig.location,
+        website: companyConfig.website,
+        career: companyConfig.career,
+        lastScraped: new Date().toISOString().split('T')[0]
       });
     } catch (err) {
-      console.log(`Note: Could not upsert company to SOLR core: ${err.message}`);
+      console.log(`Note: Could not upsert company: ${err.message}`);
     }
 
-    // Step 3: Scrape all jobs from ANOFM
     console.log("=== Step 3: Scrape jobs from ANOFM ===");
-    const rawJobs = await searchANOFM(localCif, testOnlyOnePage);
+    const rawJobs = await searchANOFM(cif, testOnlyOnePage);
     const scrapedCount = rawJobs.length;
-    console.log(`📊 Jobs scraped from ANOFM: ${scrapedCount}`);
+    console.log(`Jobs scraped from ANOFM: ${scrapedCount}`);
 
-    if (scrapedCount === 0) {
-      console.log("⚠️ No jobs found on ANOFM for this company");
-    }
-
-    // Step 4: Map raw jobs to Solr model
-    const jobs = rawJobs.map(job => mapToJobModel(job, localCif));
+    const jobs = rawJobs.map(job => mapToJobModel(job, cif));
 
     const payload = {
       source: "anofm.ro",
       scrapedAt: new Date().toISOString(),
       company: COMPANY_NAME,
-      cif: localCif,
+      cif: cif,
       jobs
     };
 
-    // Step 5: Transform jobs (filter locations, normalize values)
     console.log("Transforming jobs for SOLR...");
     const transformedPayload = transformJobsForSOLR(payload);
     const validCount = transformedPayload.jobs.filter(j => j.location).length;
-    console.log(`📊 Jobs with valid Romanian locations: ${validCount}`);
+    console.log(`Jobs with valid Romanian locations: ${validCount}`);
 
-    // Save transformed jobs to file
-    fs.writeFileSync("tmp/jobs.json", JSON.stringify(transformedPayload, null, 2), "utf-8");
-    console.log("Saved tmp/jobs.json");
+    fs.writeFileSync("scraper/jobs.json", JSON.stringify(transformedPayload, null, 2), "utf-8");
+    console.log("Saved scraper/jobs.json");
 
-    // Generate and save docs/jobs.md
     const companyData = {
-      id: localCif,
+      id: cif,
       company: transformedPayload.company,
-      group: companyConfig.group,
-      brand: companyConfig.brand,
-      status: "activ",
-      location: address ? [address] : [companyConfig.defaultLocation],
-      website: [companyConfig.website],
+      brand: companyConfig.brand || undefined,
+      status: status === 'active' ? 'activ' : (status || "activ"),
+      location: address ? [address] : companyConfig.location,
+      website: companyConfig.website,
+      career: companyConfig.career,
       lastScraped: new Date().toISOString().split('T')[0]
     };
     const markdown = generateJobsMarkdown(companyData, transformedPayload.jobs);
@@ -288,20 +262,41 @@ async function main() {
     fs.writeFileSync("docs/jobs.md", markdown, "utf-8");
     console.log("Saved docs/jobs.md");
 
-    // Publish company config for GitHub Pages
-    fs.writeFileSync("docs/company.json", JSON.stringify(companyConfig, null, 2), "utf-8");
-    console.log("Saved docs/company.json");
+    fs.copyFileSync("scraper/config/company.json", "docs/company.json");
+    console.log("Copied scraper/config/company.json → docs/company.json");
 
-    // Step 6: Upsert all jobs to Solr
-    console.log("\n=== Step 6: Upsert jobs to SOLR ===");
+    console.log("\n=== Step 4: Upsert jobs to SOLR ===");
     await upsertJobs(transformedPayload.jobs);
 
-    // Step 7: Verify final count in Solr
+    const scrapedUrls = new Set(transformedPayload.jobs.map(job => job.url));
+    const staleUrls = [...existingUrls].filter(url => !scrapedUrls.has(url));
+
+    if (staleUrls.length > 0) {
+      console.log(`\n=== Step 4.5: Delete ${staleUrls.length} stale job(s) ===`);
+      let deletedCount = 0;
+      for (const url of staleUrls) {
+        try {
+          console.log(`  Deleting: ${url}`);
+          await deleteJobByUrl(url);
+          deletedCount++;
+        } catch (delErr) {
+          console.warn(`  ⚠️ Failed to delete: ${url} — ${delErr.message}`);
+        }
+      }
+      console.log(`✅ Deleted ${deletedCount}/${staleUrls.length} stale job(s)`);
+    } else {
+      console.log("\n✅ No stale jobs to delete");
+    }
+
+    console.log("\n=== Step 5: Summary ===");
+
+    await new Promise(r => setTimeout(r, 2000));
     const finalResult = await querySOLR(COMPANY_CIF);
-    console.log(`\n📊 === SUMMARY ===`);
-    console.log(`📊 Jobs existing in SOLR before scrape: ${existingCount}`);
-    console.log(`📊 Jobs scraped from ANOFM: ${scrapedCount}`);
-    console.log(`📊 Jobs in SOLR after scrape: ${finalResult.numFound}`);
+    console.log(`\n=== SUMMARY ===`);
+    console.log(`Jobs existing in SOLR before scrape: ${existingCount}`);
+    console.log(`Jobs scraped from ANOFM: ${scrapedCount}`);
+    console.log(`Stale jobs attempted: ${staleUrls.length}`);
+    console.log(`Jobs in SOLR after scrape: ${finalResult.numFound}`);
     console.log(`====================`);
 
     console.log("\n=== DONE ===");
@@ -312,9 +307,6 @@ async function main() {
     process.exit(1);
   }
 }
-
-// Export functions for testing
-export { searchANOFM, mapToJobModel, transformJobsForSOLR };
 
 // Run main function when executed directly
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

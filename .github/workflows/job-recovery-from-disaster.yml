@@ -23,19 +23,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Restore company in SOLR company core
-        env:
-          SOLR_AUTH: ${{ secrets.SOLR_AUTH }}
+      - name: Restore company in company core
         run: |
           set -e
 
-          CIF=$(jq -r '.cif' config/company.json)
-          LEGAL_NAME=$(jq -r '.legalName' config/company.json)
-          BRAND=$(jq -r '.brand' config/company.json)
-          WEBSITE=$(jq -r '.website' config/company.json)
-          CAREER=$(jq -r '.careerUrl' config/company.json)
-          DEFAULT_LOC=$(jq -r '.defaultLocation' config/company.json)
-          SCRAPER_FILE=$(jq -r '.scraperFile' config/company.json)
+          CIF=$(jq -r '.id' scraper/config/company.json)
+          LEGAL_NAME=$(jq -r '.company' scraper/config/company.json)
+          BRAND=$(jq -r '.brand' scraper/config/company.json)
+          WEBSITE=$(jq -r '.website[0]' scraper/config/company.json)
+          CAREER=$(jq -r '.career[0]' scraper/config/company.json)
+          DEFAULT_LOC=$(jq -r '.location[0]' scraper/config/company.json)
+          SCRAPER_FILE=$(jq -r '.scraperFile' scraper/config/company.json)
           TODAY=$(date -u +%Y-%m-%d)
 
           echo "=== Target state ==="
@@ -48,27 +46,20 @@ jobs:
           echo "Scraper:   $SCRAPER_FILE"
           echo "Date:      $TODAY"
 
-          BEFORE=$(curl -s --user "${SOLR_AUTH}" \
-            "https://solr.peviitor.ro/solr/company/select?q=id:${CIF}&rows=1")
+          BEFORE=$(curl -s \
+            "https://api.peviitor.ro/v1/firme/company/?cif=${CIF}")
           echo ""
           echo "=== Current state ==="
-          echo "$BEFORE" | jq '.response.docs[0] // {numFound: 0}'
+          echo "$BEFORE" | jq '.data[0] // {total: 0}'
 
           if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then
             echo ""
-            echo "⚠️ DRY RUN — exiting without changes"
+            echo "DRY RUN — exiting without changes"
             exit 0
           fi
 
           echo ""
-          echo "=== Deleting old entry ==="
-          curl -s --user "${SOLR_AUTH}" \
-            "https://solr.peviitor.ro/solr/company/update?commit=true" \
-            -X POST -H "Content-Type: text/xml" \
-            --data-binary "<delete><id>${CIF}</id></delete>"
-
-          echo ""
-          echo "=== Creating fresh entry ==="
+          echo "=== Upserting fresh entry ==="
           jq -n \
             --arg id "$CIF" \
             --arg company "$LEGAL_NAME" \
@@ -78,34 +69,34 @@ jobs:
             --arg loc "$DEFAULT_LOC" \
             --arg today "$TODAY" \
             --arg scraperFile "$SCRAPER_FILE" \
-            '[{id:$id,company:$company,brand:$brand,status:"activ",location:[$loc],website:[$website],career:[$career],lastScraped:$today,scraperFile:$scraperFile}]' \
+            '{id:$id,company:$company,brand:$brand,status:"activ",location:[$loc],website:[$website],career:[$career],lastScraped:$today,scraperFile:$scraperFile}' \
             > company_data.json
 
           echo "Inserting:"
           cat company_data.json | jq .
 
-          curl -s --user "${SOLR_AUTH}" \
-            "https://solr.peviitor.ro/solr/company/update/json?commit=true" \
-            -X POST -H "Content-Type: application/json" \
+          curl -s -X PUT \
+            "https://api.peviitor.ro/v1/firme/company/add/" \
+            -H "Content-Type: application/json" \
             --data-binary @company_data.json
 
           echo ""
           echo "=== Verification ==="
-          AFTER=$(curl -s --user "${SOLR_AUTH}" \
-            "https://solr.peviitor.ro/solr/company/select?q=id:${CIF}&rows=1")
+          AFTER=$(curl -s \
+            "https://api.peviitor.ro/v1/firme/company/?cif=${CIF}")
 
           VERIFIED=true
 
           check_field() {
             local label="$1" expected="$2" actual="$3"
             if [ "$actual" = "null" ] || [ "$actual" = "" ]; then
-              echo "❌ $label: MISSING (expected: $expected)"
+              echo "X $label: MISSING (expected: $expected)"
               VERIFIED=false
             elif [ "$actual" != "$expected" ]; then
-              echo "❌ $label: expected '$expected', got '$actual'"
+              echo "X $label: expected '$expected', got '$actual'"
               VERIFIED=false
             else
-              echo "✅ $label: $actual"
+              echo "OK $label: $actual"
             fi
           }
 
@@ -113,35 +104,35 @@ jobs:
             local label="$1" actual="$2"
             local type=$(echo "$actual" | jq -r 'type')
             if [ "$type" != "array" ]; then
-              echo "❌ $label: not an array (type: $type)"
+              echo "X $label: not an array (type: $type)"
               VERIFIED=false
             else
               local len=$(echo "$actual" | jq 'length')
-              echo "✅ $label: array ($len items)"
+              echo "OK $label: array ($len items)"
             fi
           }
 
           check_url() {
             local label="$1" val="$2"
             if [[ ! "$val" =~ ^https?:// ]]; then
-              echo "❌ $label: not a valid URL: $val"
+              echo "X $label: not a valid URL: $val"
               VERIFIED=false
             else
-              echo "✅ $label: $val"
+              echo "OK $label: $val"
             fi
           }
 
           check_date() {
             local label="$1" val="$2"
             if [[ ! "$val" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
-              echo "❌ $label: not YYYY-MM-DD: $val"
+              echo "X $label: not YYYY-MM-DD: $val"
               VERIFIED=false
             else
-              echo "✅ $label: $val"
+              echo "OK $label: $val"
             fi
           }
 
-          D=$(echo "$AFTER" | jq '.response.docs[0]')
+          D=$(echo "$AFTER" | jq '.data[0]')
           echo ""
           echo "--- Field checks ---"
           check_field "CIF"        "$CIF"         "$(echo "$D" | jq -r '.id')"
@@ -162,22 +153,18 @@ jobs:
 
           echo ""
           if [ "$VERIFIED" = true ]; then
-            echo "✅✅✅ RECOVERY COMPLETE — ALL FIELDS VERIFIED"
+            echo "RECOVERY COMPLETE — ALL FIELDS VERIFIED"
           else
-            echo "❌❌❌ RECOVERY FAILED — VERIFICATION ERRORS"
+            echo "RECOVERY FAILED — VERIFICATION ERRORS"
             exit 1
           fi
 
       - name: Run Integration Tests
         if: github.event.inputs.dry_run != 'true'
-        env:
-          SOLR_AUTH: ${{ secrets.SOLR_AUTH }}
         run: |
           npm run test:integration
 
       - name: Run E2E Tests
         if: github.event.inputs.dry_run != 'true'
-        env:
-          SOLR_AUTH: ${{ secrets.SOLR_AUTH }}
         run: |
           npm run test:e2e

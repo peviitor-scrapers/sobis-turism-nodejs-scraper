@@ -42,37 +42,35 @@ function peviitorResponse(companies) {
   };
 }
 
-function solrResponse(numFound, docs) {
+function solrResponse(total, data) {
   return {
     ok: true,
-    json: async () => ({ response: { numFound, docs } })
+    json: async () => ({ total, data })
   };
 }
 
 const SOBIS_ANAF_RECORD = {
   cui: 794572,
   name: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL',
-  address: 'Sat Arpaşu de Sus, Comuna Arpaşu de Jos, Sibiu',
-  caenCode: '6201',
+  address: 'Sibiu',
+  caenCode: '7911',
   inactive: false,
   vatRegistered: true,
   eFacturaRegistered: false,
-  headquartersAddress: { locality: 'Sat Arpaşu de Sus, Comuna Arpaşu de Jos' }
+  headquartersAddress: { locality: 'Sibiu' }
 };
 
 describe('company.js', () => {
   let company;
 
   beforeAll(async () => {
-    process.env.SOLR_AUTH = 'test:test';
     fs.mkdirSync("tmp", { recursive: true });
     backupFile(COMPANY_JSON_PATH);
     backupFile(ROOT_COMPANY_JSON_PATH);
-    company = await import('../../company.js');
+    company = await import('../../scraper/company.js');
   });
 
   afterAll(() => {
-    delete process.env.SOLR_AUTH;
     restoreFile(COMPANY_JSON_PATH);
     restoreFile(ROOT_COMPANY_JSON_PATH);
   });
@@ -83,7 +81,7 @@ describe('company.js', () => {
   });
 
   describe('getCompanyData (no cache)', () => {
-    it('should fetch SOBIS TURISM via direct CIF lookup and return company data', async () => {
+    it('should fetch SOBIS via direct CIF lookup and return company data', async () => {
       mockFetch.mockResolvedValueOnce(anafCompanyResponse(SOBIS_ANAF_RECORD));
 
       const result = await company.getCompanyData();
@@ -155,5 +153,20 @@ describe('company.js', () => {
       expect(result).toHaveProperty('existingJobsCount');
       expect(typeof result.existingJobsCount).toBe('number');
     });
+
+    // SOBIS e activă — testul inactive se rulează doar dacă firma e inactivă
+    if (SOBIS_ANAF_RECORD.inactive) {
+      it('should return inactive status when company is inactive', async () => {
+        const inactiveRecord = { ...SOBIS_ANAF_RECORD, inactive: true };
+
+        mockFetch
+          .mockResolvedValueOnce(anafCompanyResponse(inactiveRecord))
+          .mockResolvedValueOnce(solrResponse(0, []));
+
+        const result = await company.validateAndGetCompany();
+
+        expect(result).toHaveProperty('status', 'inactive');
+      });
+    }
   });
 });

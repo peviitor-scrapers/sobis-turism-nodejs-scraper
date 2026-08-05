@@ -248,19 +248,19 @@
       <img src="https://peviitor.ro/assets/logo-DV2JQkir.svg" alt="peviitor" class="logo-img">
     </a>
     <h1 data-i18n="pageTitle">Locuri de muncă</h1>
-    <p data-i18n="subtitle">Scraper automat pentru locurile de muncă SOBIS TURISM Romania</p>
+    <p data-i18n="subtitle">Scraper automat pentru locurile de muncă SOBIS Romania</p>
 
     <div style="margin: 15px 0; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;">
-      <a href="https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml" target="_blank">
-        <img src="https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml/badge.svg" alt="Scraper Status">
+      <a href="https://github.com/peviitor-scrapers/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml" target="_blank">
+        <img src="https://github.com/peviitor-scrapers/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml/badge.svg" alt="Scraper Status">
       </a>
-      <a href="https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/automation-testing.yml" target="_blank">
-        <img src="https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/automation-testing.yml/badge.svg" alt="Tests Status">
+      <a href="https://github.com/peviitor-scrapers/sobis-turism-nodejs-scraper/actions/workflows/automation-testing.yml" target="_blank">
+        <img src="https://github.com/peviitor-scrapers/sobis-turism-nodejs-scraper/actions/workflows/automation-testing.yml/badge.svg" alt="Tests Status">
       </a>
-      <a href="https://github.com/sebiboga/sobis-turism-nodejs-scraper/blob/main/CHANGELOG.md" target="_blank">
+      <a href="https://github.com/peviitor-scrapers/sobis-turism-nodejs-scraper/blob/main/CHANGELOG.md" target="_blank">
         <img src="https://img.shields.io/github/package-json/v/sebiboga/sobis-turism-nodejs-scraper?label=version&color=blue" alt="Version">
       </a>
-      <a href="https://github.com/sebiboga/sobis-turism-nodejs-scraper/blob/main/LICENSE" target="_blank">
+      <a href="https://github.com/peviitor-scrapers/sobis-turism-nodejs-scraper/blob/main/LICENSE" target="_blank">
         <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License">
       </a>
       <a href="https://ecma-international.org/" target="_blank">
@@ -300,11 +300,11 @@
     <div class="card-header" data-i18n="aboutTitle">Despre acest scraper</div>
     <div class="card-body">
       <ul class="features-list" data-i18n="featuresList">
-        <li data-i18n="f1">Extrage job-uri din ANOFM API (filtrat pe CIF)</li>
-        <li data-i18n="f2">Parsează cu fetch (JSON API)</li>
+        <li data-i18n="f1">Extrage job-uri din API-ul public ANOFM</li>
+        <li data-i18n="f2">Sursa unică: ANOFM (fără pagină de cariere)</li>
         <li data-i18n="f3">Validează compania via ANAF</li>
         <li data-i18n="f4">Verifică și elimină job-uri expirate</li>
-        <li data-i18n="f5">Salvează în SOLR pentru peviitor.ro</li>
+        <li data-i18n="f5">Salvează în API-ul Peviitor</li>
       </ul>
     </div>
   </div>
@@ -317,7 +317,7 @@
   </div>
 
   <div class="btn-wrapper" style="display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap;">
-    <a class="btn" href="https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml" target="_blank">
+    <a class="btn" href="https://github.com/peviitor-scrapers/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml" target="_blank">
       <span>&#9654;</span> <span data-i18n="runBtn">Rulează Scraper</span>
     </a>
     <a class="btn" href="test-results/" style="background:#7d6b5a;">
@@ -337,9 +337,8 @@
   </div>
 
   <footer>
-    <a href="https://sobisturism.ro/" target="_blank">sobisturism.ro</a> &middot;
-    <a href="https://github.com/sebiboga/sobis-turism-nodejs-scraper" target="_blank">GitHub</a> &middot;
-    <a href="https://github.com/sebiboga/sobis-turism-nodejs-scraper/blob/main/docs/README.md" target="_blank" data-i18n="docs">Documentație</a> &middot;
+    <a href="https://github.com/peviitor-scrapers/sobis-turism-nodejs-scraper" target="_blank">GitHub</a> &middot;
+    <a href="https://github.com/peviitor-scrapers/sobis-turism-nodejs-scraper/blob/main/docs/README.md" target="_blank" data-i18n="docs">Documentație</a> &middot;
     <a href="https://peviitor.ro/" target="_blank">peviitor.ro</a>
   </footer>
 
@@ -355,8 +354,8 @@ async function loadCompanyConfig() {
     const res = await fetch("./company.json", { cache: "no-cache" });
     if (!res.ok) return;
     const cfg = await res.json();
-    if (cfg.legalName) COMPANY = cfg.legalName;
-    if (cfg.cif) COMPANY_CIF = cfg.cif;
+    if (cfg.company) COMPANY = cfg.company;
+    if (cfg.id) COMPANY_CIF = cfg.id;
   } catch (e) {
     console.warn("company.json not available, using fallback constants");
   }
@@ -364,16 +363,16 @@ async function loadCompanyConfig() {
 
 const i18n = {
   en: {
-    pageTitle: "SOBIS TURISM Jobs — peviitor.ro",
-    subtitle: "Automated scraper for SOBIS TURISM Romania jobs",
+    pageTitle: "SOBIS Jobs — peviitor.ro",
+    subtitle: "Automated scraper for SOBIS Romania jobs",
     jobsLabel: "Jobs",
     verifiedLabel: "Verified",
     aboutTitle: "About this scraper",
-    f1: "Extracts jobs from ANOFM API (filtered by CIF)",
-    f2: "Parses with fetch (JSON API)",
+    f1: "Extracts jobs from the public ANOFM API",
+    f2: "Only source: ANOFM (no careers page)",
     f3: "Validates company via ANAF",
     f4: "Checks and removes expired jobs",
-    f5: "Saves to SOLR for peviitor.ro",
+    f5: "Saves to Peviitor API",
     companyTitle: "About the company",
     runBtn: "Run Scraper",
     jobsTitle: "Available jobs",
@@ -384,15 +383,15 @@ const i18n = {
   },
   ro: {
     pageTitle: "Locuri de muncă — peviitor.ro",
-    subtitle: "Scraper automat pentru locurile de muncă SOBIS TURISM Romania",
+    subtitle: "Scraper automat pentru locurile de muncă SOBIS Romania",
     jobsLabel: "Locuri de muncă",
     verifiedLabel: "Verificate",
     aboutTitle: "Despre acest scraper",
-    f1: "Extrage locuri de muncă din ANOFM API (filtrat pe CIF)",
-    f2: "Parsează cu fetch (JSON API)",
+    f1: "Extrage locuri de muncă din API-ul public ANOFM",
+    f2: "Sursa unică: ANOFM (fără pagină de cariere)",
     f3: "Validează compania via ANAF",
     f4: "Verifică și elimină locuri de muncă expirate",
-    f5: "Salvează în SOLR pentru peviitor.ro",
+    f5: "Salvează în API-ul Peviitor",
     companyTitle: "Despre companie",
     runBtn: "Rulează Scraper",
     jobsTitle: "Locuri de muncă disponibile",

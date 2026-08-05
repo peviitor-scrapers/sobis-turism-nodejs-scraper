@@ -1,32 +1,25 @@
 {
-  "validatedAt": "2026-07-21T12:00:00.000Z",
+  "validatedAt": "2026-08-05T12:00:00.000Z",
   "source": "ANAF",
   "brand": "SOBIS",
   "anaf": {
-    "cui": 12018818,
-    "name": "SOBIS SOLUTIONS S.R.L.",
-    "address": "Sat Arpaşu de Sus, Comuna Arpaşu de Jos, Sibiu",
-    "registrationNumber": "J32/2018/2024",
+    "cui": 794572,
+    "name": "SC TRANSILVANIA HOLIDAY TRAVELS SRL",
+    "address": "MUNICIPIUL SIBIU, SIBIU",
+    "registrationNumber": "J32/793/1995",
     "phone": "",
     "fax": "",
-    "postalCode": "",
-    "caenCode": "6201",
+    "postalCode": "550301",
+    "caenCode": "7911",
     "iban": "",
     "registrationState": "INREGISTRAT",
-    "registrationDate": "2024-01-01",
+    "registrationDate": "1995-02-10",
     "fiscalAuthority": "AJFP Sibiu",
     "ownershipForm": "PROPR.PRIVATA-CAPITAL PRIVAT AUTOHTON",
     "organizationForm": "PERSOANA JURIDICA",
     "legalForm": "SOCIETATE COMERCIALĂ CU RĂSPUNDERE LIMITATĂ",
-    "vatRegistered": true,
-    "vatPeriods": [
-      {
-        "start": "2024-01-01",
-        "end": null,
-        "yearStart": "",
-        "message": ""
-      }
-    ],
+    "vatRegistered": false,
+    "vatPeriods": [],
     "cashBasisVat": false,
     "cashBasisVatStart": null,
     "cashBasisVatEnd": null,
@@ -38,7 +31,7 @@
     "headquartersAddress": {
       "street": "",
       "number": "",
-      "locality": "Sat Arpaşu de Sus, Comuna Arpaşu de Jos",
+      "locality": "Sibiu",
       "county": "Sibiu",
       "country": "România",
       "postalCode": ""
@@ -46,44 +39,40 @@
     "fiscalAddress": {
       "street": "",
       "number": "",
-      "locality": "",
-      "county": "",
-      "country": "",
+      "locality": "Sibiu",
+      "county": "Sibiu",
+      "country": "România",
       "postalCode": ""
     },
     "administrators": [],
     "authorizedCaenCodes": [
-      "6201",
-      "6202",
-      "6209",
-      "6311",
-      "6312"
+      "7911",
+      "7912"
     ],
     "onrcStatus": 1048,
     "onrcStatusLabel": "Funcțiune"
   },
   "peviitor": {
-    "id": "12018818",
-    "company": "SOBIS SOLUTIONS S.R.L.",
+    "id": "794572",
+    "company": "SC TRANSILVANIA HOLIDAY TRAVELS SRL",
     "brand": "SOBIS",
-    "group": "TSS",
     "status": "activ",
     "location": ["Sibiu"],
-    "lastScraped": "2026-07-21",
-    "scraperFile": "job-seeker-ro-spider.yml",
+    "lastScraped": "2026-08-05",
+    "scraperFile": "https://github.com/peviitor-scrapers/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml",
     "_version_": 0,
-    "_root_": "12018818"
+    "_root_": "794572"
   },
   "summary": {
-    "company": "SOBIS SOLUTIONS S.R.L.",
-    "cif": "12018818",
+    "company": "SC TRANSILVANIA HOLIDAY TRAVELS SRL",
+    "cif": "794572",
     "active": true,
     "inactiveSince": null,
     "reactivatedSince": null,
-    "address": "Sat Arpaşu de Sus, Comuna Arpaşu de Jos, Sibiu",
-    "registrationNumber": "J32/2018/2024",
-    "caenCode": "6201",
-    "vatRegistered": true,
+    "address": "Sibiu",
+    "registrationNumber": "J32/793/1995",
+    "caenCode": "7911",
+    "vatRegistered": false,
     "eFacturaRegistered": false
   }
 }

@@ -1,151 +1,35 @@
-# job_seeker_ro_spider — SOBIS TURISM Romania Scraper
-
 [![Oportunitati SI Cariere](https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml/badge.svg)](https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml)
 [![Automation Tests](https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/automation-testing.yml/badge.svg)](https://github.com/sebiboga/sobis-turism-nodejs-scraper/actions/workflows/automation-testing.yml)
-
 [![Version](https://img.shields.io/github/package-json/v/sebiboga/sobis-turism-nodejs-scraper?label=version&color=blue)](CHANGELOG.md)
 [![Test Results](https://img.shields.io/badge/test--results-HTML-9b59b6)](https://sebiboga.github.io/sobis-turism-nodejs-scraper/test-results/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![JavaScript](https://img.shields.io/badge/javascript-ESM-F7DF1E?logo=javascript&logoColor=black)](https://ecma-international.org/)
+[![JavaScript](https://img.shields.io/badge/javascript-ESM-F7DFE1?logo=javascript&logoColor=black)](https://ecma-international.org/)
 [![Node.js](https://img.shields.io/badge/node-24-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fpeviitor.ro&label=peviitor.ro)](https://peviitor.ro)
 [![API](https://img.shields.io/website?url=https%3A%2F%2Fapi.peviitor.ro%2F&label=api.peviitor.ro)](https://api.peviitor.ro/)
-[![SOLR](https://img.shields.io/website?url=https%3A%2F%2Fsolr.peviitor.ro%2Fsolr%2F&label=solr.peviitor.ro)](https://solr.peviitor.ro/solr/)
 [![GitHub Pages](https://img.shields.io/github/deployments/sebiboga/sobis-turism-nodejs-scraper/github-pages?label=GitHub%20Pages)](https://sebiboga.github.io/sobis-turism-nodejs-scraper/)
 
-**job_seeker_ro_spider** — un scraper pentru job-urile SOBIS TURISM din România. Extrage anunțurile de pe [ANOFM](https://anofm.ro) (API public filtrat pe CIF) și le publică în [peviitor.ro](https://peviitor.ro) prin API-ul SOLR.
+# job_seeker_ro_spider — SOBIS TURISM Scraper
 
-> **🌱 Derived scraper.** Acest repo este derivat din [EPAM template](https://github.com/sebiboga/epam-systems-international-srl-nodejs-scraper). Toate scraper-ele Node.js din ecosistemul peviitor.ro sunt derivate din acest pattern.
->
-> **📋 Companie:** SC TRANSILVANIA HOLIDAY TRAVELS SRL (CIF: 794572)
->
-> **🌐 Sursă:** ANOFM public API (`/api/entity/vw_public_job_posting`) filtrat pe CIF
+**job_seeker_ro_spider** — un scraper pentru job-urile [SOBIS TURISM](https://www.sobisturism.ro) (SC TRANSILVANIA HOLIDAY TRAVELS SRL) din România. Extrage anunțurile de pe [ANOFM](https://www.anofm.ro) și le publică în [peviitor.ro](https://peviitor.ro) prin API-ul Peviitor.
 
 ## Overview
 
-Proiectul automatizează colectarea zilnică a job-urilor SOBIS TURISM din România, menținând board-ul peviitor.ro la zi cu cele mai recente oportunități de carieră.
+Proiectul automatizează colectarea zilnică a job-urilor SOBIS TURISM din România, menținând board-ul peviitor.ro la zi cu cele mai recente oportunități de carieră. SOBIS TURISM nu are o pagină publică de cariere — sursa principală (și unică) de job-uri este API-ul public ANOFM, interogat după CIF-ul companiei.
 
 ## Features
 
-- Extrage job-uri din API-ul public ANOFM (filtrat pe CIF)
+- Extrage job-uri din ANOFM API (paginare + filtrare după CIF)
 - Validează compania via ANAF (CUI, status activ/inactiv, adresă completă)
 - **Cache ANAF la 7 zile** — committed în repo, nu lovește demoANAF la fiecare scrape
 - **Fallback la cache stale** dacă ANAF e indisponibil
 - Cross-validează cu Peviitor API
-- Stochează în SOLR (job core + company core)
+- Șterge job-urile stale (pe site dar nu și în Peviitor)
+- Stochează în Peviitor API (job core + company core)
 - Generează `docs/jobs.md` automat — accesibil pe GitHub Pages
-- **Identitate companie într-un singur fișier** (`config/company.json`)
+- **Identitate companie într-un singur fișier** (`scraper/config/company.json`)
 - GitHub Actions: scrape zilnic + testare automată (unit, integration, e2e, consistency)
 - Se identifică prin User-Agent: `job_seeker_ro_spider`
-
-## Project Structure
-
-```
-├── index.js                    # Main scraper entry point (ANOFM API)
-├── company.js                  # Company validation via ANAF + Peviitor + SOLR
-├── demoanaf.js                 # CLI wrapper for src/anaf.js
-├── solr.js                     # SOLR operations (query, upsert, delete, company)
-├── validate-jobs.js            # Job URL validator
-├── config/
-│   ├── company.json            # Single source of truth: CIF, brand, URLs
-│   └── company.js              # ESM loader for company.json
-├── src/
-│   ├── anaf.js                 # ANAF API core module
-│   ├── markdown-generator.js   # Generates docs/jobs.md from scraped data
-│   └── job-validator.js        # Shared validateByHead + validateByContent
-├── company.json                # ANAF data cache (committed, 7-day TTL)
-├── tests/
-│   ├── unit/
-│   ├── integration/
-│   ├── e2e/
-│   └── consistency/
-├── docs/
-│   ├── index.html              # Live job board (GitHub Pages)
-│   ├── jobs.md                 # Scraped jobs in markdown (generated by CI)
-│   └── test-results/
-├── .github/
-│   └── workflows/
-│       ├── job-seeker-ro-spider.yml     # Daily scraping at 6 AM UTC
-│       └── automation-testing.yml       # Automation Tests on push/PR
-└── package.json
-```
-
-## Setup
-
-### Prerequisites
-
-- Node.js 24+
-- npm
-
-### Installation
-
-```bash
-npm install
-```
-
-### Configuration
-
-Set the `SOLR_AUTH` environment variable with your Solr credentials:
-
-```bash
-export SOLR_AUTH="username:password"
-```
-
-## Usage
-
-### Run the Scraper
-
-```bash
-npm run scrape
-```
-
-### Run Tests
-
-```bash
-# All tests
-npm test
-
-# Unit tests only
-npm run test:unit
-
-# Integration tests
-npm run test:integration
-
-# E2E tests
-npm run test:e2e
-```
-
-## Workflows
-
-### Daily Scraping
-
-The `job-seeker-ro-spider.yml` workflow runs daily at 6 AM UTC via GitHub Actions.
-
-### Test Automation
-
-The `automation-testing.yml` workflow runs on every push and pull request.
-
-## Company Details
-
-| Field | Value |
-|-------|-------|
-| CUI/CIF | 794572 |
-| Legal Name | SC TRANSILVANIA HOLIDAY TRAVELS SRL |
-| Brand | SOBIS |
-| Group | TSS (Total Specific Solutions) |
-| Website | https://www.sobisturism.ro |
-| Data Source | ANOFM public API |
-| Owner | Martin Müller |
-
-## Derived From
-
-This scraper was derived from the [EPAM template](https://github.com/sebiboga/epam-systems-international-srl-nodejs-scraper).
-
-## Acknowledgments
-
-This project was developed with assistance from **[opencode](https://github.com/anomalyco/opencode)**.
-
-Special thanks to the open source community and the peviitor.ro team for their support.
 
 ## License
 
@@ -156,3 +40,7 @@ Licensed under the [MIT License](LICENSE).
 ## Managed By
 
 This project is managed by [ASOCIATIA OPORTUNITATI SI CARIERE](https://oportunitatisicariere.ro) and used as a web scraper for the [peviitor.ro](https://peviitor.ro) job board project.
+
+## Disclaimer
+
+This scraper is designed for educational purposes and legitimate job data aggregation for the Romanian job market.

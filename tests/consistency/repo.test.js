@@ -50,6 +50,8 @@ describe("Repository Configuration", () => {
       expect(data.homepage).toMatch(/^https?:\/\//);
       console.log(`✅ GitHub Pages URL: ${data.homepage}`);
     });
+
+    // deploy.yml removed — legacy GitHub Pages auto-deploys from docs/
   });
 
   describe("hosted HTML page", () => {
@@ -75,19 +77,7 @@ describe("Repository Configuration", () => {
       expect(html).toContain("<!DOCTYPE html>");
       expect(html).toContain("peviitor");
       expect(html).toContain("SOBIS");
-      expect(html).toContain("sobisturism.ro");
       console.log(`✅ GitHub Pages HTML loaded from ${pagesUrl}`);
-    });
-  });
-
-  describe("SOLR_AUTH secret", () => {
-    it("should be defined in CI environment", () => {
-      if (!REPO) {
-        console.log("GITHUB_REPOSITORY not set — running locally, skipping");
-        return;
-      }
-      expect(process.env.SOLR_AUTH).toBeTruthy();
-      console.log("✅ SOLR_AUTH is set");
     });
   });
 

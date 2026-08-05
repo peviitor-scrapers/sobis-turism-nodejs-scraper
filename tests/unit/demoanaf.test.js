@@ -28,37 +28,52 @@ function errorResponse(status) {
   };
 }
 
-const ANRAF_RECORD = {
+function cuiscanCompanyResponse(data) {
+  return {
+    ok: true,
+    json: async () => data
+  };
+}
+
+const SOBIS_ANAF_RECORD = {
   cui: 794572,
   name: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL',
-  address: 'Sat Arpaşu de Sus, Comuna Arpaşu de Jos, Sibiu',
-  caenCode: '6201',
+  address: 'Sibiu',
+  caenCode: '7911',
   inactive: false,
-  inactiveSince: null,
-  reactivatedSince: null,
-  registrationNumber: 'J32/2018/2024',
+  registrationNumber: 'J32/793/1995',
   vatRegistered: true,
   onrcStatusLabel: 'Funcțiune',
   legalForm: 'SRL'
 };
 
+const CUISCAN_RECORD = {
+  cui: 794572,
+  denumire: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL',
+  adresa: 'Sibiu',
+  codCaen: '7911',
+  activ: true,
+  nrRegCom: 'J32/793/1995',
+  platitorTVA: true,
+  stareInregistrare: 'INREGISTRAT din data 10.02.1995',
+  adresaSediu: { strada: 'Strada Dorobanților', numar: '48', localitate: 'Sibiu', judet: 'MUNICIPIUL SIBIU', codPostal: '550301' }
+};
+
 const CACHED_DATA = {
   cui: 794572,
   name: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL',
-  address: 'Sat Arpaşu de Sus, Comuna Arpaşu de Jos, Sibiu',
-  registrationNumber: 'J32/2018/2024',
-  caenCode: '6201',
+  address: 'MUNICIPIUL SIBIU, SECTOR 1, BLD IANCU DE HUNEDOARA, NR.48, ET.9',
+  registrationNumber: 'J32/793/1995',
+  caenCode: '7911',
   inactive: false,
-  onrcStatusLabel: 'Funcțiune',
-  administrators: [],
-  authorizedCaenCodes: ['6201', '6202', '6209', '6311', '6312']
+  onrcStatusLabel: 'Funcțiune'
 };
 
-describe('src/anaf.js', () => {
+describe('scraper/anaf.js', () => {
   let anaf;
 
   beforeAll(async () => {
-    anaf = await import('../../src/anaf.js');
+    anaf = await import('../../scraper/anaf.js');
   });
 
   beforeEach(() => {
@@ -98,10 +113,16 @@ describe('src/anaf.js', () => {
       expect(results[0]).toHaveProperty('statusLabel', 'Funcțiune');
     });
 
-    it('should throw on HTTP error', async () => {
-      mockFetch.mockResolvedValue(errorResponse(500));
+    it('should fallback to CUIFirma when ANAF search fails', async () => {
+      mockFetch
+        .mockResolvedValueOnce(errorResponse(500))
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ results: [{ cui: 794572, name: 'SC TRANSILVANIA HOLIDAY TRAVELS SRL', is_active: true }] }) });
 
-      await expect(anaf.searchCompany('SOBIS')).rejects.toThrow('ANAF search error: 500');
+      const results = await anaf.searchCompany('SOBIS');
+
+      expect(Array.isArray(results)).toBe(true);
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0].cui).toBe('794572');
     });
 
     it('should encode brand name in URL', async () => {
@@ -118,7 +139,7 @@ describe('src/anaf.js', () => {
 
   describe('getCompanyFromANAF', () => {
     it('should return company data for valid CIF', async () => {
-      mockFetch.mockResolvedValue(anafCompanyResponse(ANRAF_RECORD));
+      mockFetch.mockResolvedValue(anafCompanyResponse(SOBIS_ANAF_RECORD));
 
       const data = await anaf.getCompanyFromANAF('794572');
 
@@ -129,30 +150,33 @@ describe('src/anaf.js', () => {
       expect(data).toHaveProperty('registrationNumber');
     });
 
-    it('should retry on HTTP error then succeed', async () => {
+    it('should fallback to CUIScan when ANAF fails', async () => {
       mockFetch
         .mockResolvedValueOnce(errorResponse(500))
-        .mockResolvedValueOnce(anafCompanyResponse(ANRAF_RECORD));
+        .mockResolvedValueOnce(cuiscanCompanyResponse(CUISCAN_RECORD));
 
       const data = await anaf.getCompanyFromANAF('794572');
 
       expect(data).toBeDefined();
       expect(data.cui).toBe(794572);
+      expect(data.name).toBe('SC TRANSILVANIA HOLIDAY TRAVELS SRL');
       expect(mockFetch).toHaveBeenCalledTimes(2);
     });
 
-    it('should throw after exhausting retries', async () => {
+    it('should throw when both ANAF and CUIScan fail', async () => {
       mockFetch.mockResolvedValue(errorResponse(500));
 
       await expect(anaf.getCompanyFromANAF('794572')).rejects.toThrow();
-      expect(mockFetch).toHaveBeenCalledTimes(3);
+      expect(mockFetch).toHaveBeenCalledTimes(2);
     });
 
     it('should handle API-level error response', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({ success: false, error: { message: 'Company not found' } })
-      });
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ success: false, error: { message: 'Company not found' } })
+        })
+        .mockResolvedValueOnce(errorResponse(500));
 
       await expect(anaf.getCompanyFromANAF('00000000')).rejects.toThrow();
     });
@@ -167,7 +191,7 @@ describe('src/anaf.js', () => {
 
   describe('getCompanyFromANAFWithFallback', () => {
     it('should return fresh data when API works', async () => {
-      mockFetch.mockResolvedValue(anafCompanyResponse(ANRAF_RECORD));
+      mockFetch.mockResolvedValue(anafCompanyResponse(SOBIS_ANAF_RECORD));
 
       const data = await anaf.getCompanyFromANAFWithFallback('794572');
 

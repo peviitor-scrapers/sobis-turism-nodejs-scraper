@@ -2,9 +2,11 @@
 
 ## Project Purpose
 
-This scraper extracts job listings from SC TRANSILVANIA HOLIDAY TRAVELS SRL via the ANOFM public API and imports them to peviitor.ro.
+This scraper extracts job listings for SOBIS TURISM (SC TRANSILVANIA HOLIDAY TRAVELS SRL) from the public ANOFM API and imports them to peviitor.ro.
 
-Target: ANOFM public API (`/api/entity/vw_public_job_posting`) filtered by CIF 794572
+Target: https://mediere.anofm.ro/api/entity/vw_public_job_posting (query by CIF 794572)
+
+SOBIS TURISM has no public careers page — the ANOFM API is the primary (and only) source of job listings.
 
 ## Model Schemas
 
@@ -38,85 +40,78 @@ When working on this scraper:
 ## Technologies
 
 - **Node.js & JavaScript** - For scraping and data extraction
-- **Apache SOLR** - For data storage and indexing
-- **opencode** - For development
+- **Peviitor API** - For data storage and retrieval (api.peviitor.ro)
+- **Claude Code** - For development
 
 ## Workflow Steps
 
-1. **Start with brand** - We know the brand (e.g., "SOBIS")
+1. **Start with brand** - We know the brand ("SOBIS")
 2. **Search in DemoANAF** - Find company by brand, get CIF from search results
 3. **Get company details from ANAF** - Using CIF, fetch full company data from ANAF
 4. **Validate with Peviitor** - Verify company exists in Peviitor, get group/brand info
-5. **Check existing jobs in SOLR** - Query SOLR by CIF to see what jobs already exist
-6. **Check company status** - If ANAF status = "inactive" → DELETE existing jobs from SOLR and STOP
+5. **Check existing jobs** - Query Peviitor API by CIF to see what jobs already exist
+6. **Check company status** - If ANAF status = "inactive" → DELETE existing jobs and STOP
 7. **Save company.json** - Save all ANAF + Peviitor data for backup
-8. **Scrape new jobs** - Query ANOFM API filtered by CIF
-9. **Transform for SOLR** - Validate and fix job data:
+8. **Scrape new jobs** - Extract jobs from the ANOFM API by CIF
+9. **Transform for API** - Validate and fix job data:
    - location: Only Romanian cities allowed
    - tags: lowercase, no diacritics
    - company: uppercase
-10. **Upsert to SOLR** - Import/update jobs in SOLR
+10. **Upsert to API** - Import/update jobs via Peviitor API
 11. **Verify URLs** - Check existing job URLs still work, delete 404s
 
 ## Running the Scraper
 
 ```bash
-# Set environment variables
-export SOLR_AUTH=your-solr-credentials
-
 # Run the full scraper workflow (single command)
-node index.js
-
-# Test mode (one page only, limit 10 jobs)
-node index.js --test
+node scraper/index.js
 ```
 
-> **Important**: Scraper does NOT delete jobs from other sources. It only upserts SOBIS TURISM jobs from ANOFM. Existing jobs are preserved.
+> **Important**: The scraper only upserts ANOFM jobs for this company. Existing jobs from other sources are preserved.
 
 ## Full Workflow (automatic)
 
-When running `node index.js`, the following steps happen automatically:
+When running `node scraper/index.js`, the following steps happen automatically:
 
-1. **Check existing jobs count** - Query SOLR by CIF (read-only)
+1. **Check existing jobs count** - Query Peviitor API by CIF (read-only)
 2. **Validate company via ANAF** - Check company exists and is active
-3. **Scrape jobs** - Query ANOFM API filtered by CIF
-4. **Transform for SOLR** - Fix locations (only Romanian cities), normalize fields
-5. **Upsert to SOLR** - Add/update jobs (SOLR handles duplicates by URL)
-6. **Show Summary** - Log job counts
-
-**Important**: We do NOT delete existing jobs! This preserves jobs from other sources.
+3. **Scrape jobs** - Extract jobs from the ANOFM API by CIF
+4. **Transform for API** - Fix locations (only Romanian cities), normalize fields
+5. **Upsert to API** - Add/update jobs (API handles duplicates by URL)
+6. **Delete stale jobs** - Remove jobs in API but no longer on the website
+7. **Show Summary** - Log job counts
 
 ## Workflow Flowchart
 
 ```
-config/company.json (single source of truth: CIF, brand, URLs)
+scraper/config/company.json (single source of truth: CIF, brand, URLs)
     │
     ▼
-index.js
+scraper/index.js
     │
     ▼
-querySOLR(CIF) - just count, don't delete
+querySOLR(CIF) - check existing jobs
     │
     ▼
 company.js (validate company)
-    ├── load cache (tmp/company.json → company.json)
+    ├── load cache (tmp/company.json)
     │   └── if fresh (<7 days), skip ANAF entirely
     ├── ANAF API ──► get company name + CIF (only if cache stale/missing)
+    ├── CUIScan ──► fallback if ANAF fails
     ├── Peviitor API ──► validate company model
     └── SOLR ──► check existing jobs count
     │
     ▼ (if active)
-query ANOFM API (jobs for CIF)
+searchANOFM() - query ANOFM API by CIF (pagination)
     │
     ▼
 transformJobsForSOLR()
     ├── Filter: keep only Romanian locations
-    │         (Bucharest, Cluj-Napoca, etc)
     ├── Fallback: "România" for unknown
     └── Format: lowercase tags, uppercase company
     │
     ▼
-upsertJobs() - SOLR handles duplicate by URL
+upsertJobs() - API handles duplicate by URL
     │
     ▼
 generateJobsMarkdown() → docs/jobs.md
@@ -127,23 +122,22 @@ generateJobsMarkdown() → docs/jobs.md
 
 | File | Role |
 |------|------|
-| `config/company.json` | **Single source of truth** for company identity (CIF, brand, URLs, API params) |
-| `config/company.js` | ESM wrapper that loads `config/company.json` for Node code |
-| `index.js` | Main entry point - full workflow: validate company → scrape → transform → upsert → generate docs/jobs.md |
-| `company.js` | Validates company via ANAF + Peviitor; caches in root `company.json` (7-day TTL) and `tmp/company.json` |
-| `solr.js` | SOLR operations module - query, delete, upsert jobs + standalone commands |
-| `validate-jobs.js` | Manual deep validator (content-aware); thin CLI wrapper over `src/job-validator.js` |
-| `src/anaf.js` | ANAF API core module - searchCompany(brand) and getCompanyFromANAF(cif) with 3-retry/2s-backoff |
-| `src/markdown-generator.js` | Generates `docs/jobs.md` with company info and all scraped jobs |
-| `src/job-validator.js` | Shared validation primitives: `validateByHead`, `validateByContent`, `DEFAULT_EXPIRED_KEYWORDS` |
-| `demoanaf.js` | CLI entry point for ANAF module (thin wrapper around src/anaf.js) |
-| `tests/validate-sobis-turism-jobs.js` | CI fast validator (HEAD only); thin CLI over `src/job-validator.js` + `solr.js` |
-| `tests/unit/index.test.js` | Unit tests for parseAnofmJobs, mapToJobModel, transformJobsForSOLR |
+| `scraper/config/company.json` | **Single source of truth** for company identity (CIF, brand, URLs, API params) |
+| `scraper/config/company.js` | ESM wrapper that loads `scraper/config/company.json` for Node code |
+| `scraper/index.js` | Main entry point - full workflow: validate company → scrape → transform → upsert → delete stale → generate docs/jobs.md |
+| `scraper/company.js` | Validates company via ANAF + CUIScan + Peviitor; caches in `tmp/company.json` (7-day TTL) |
+| `scraper/anaf.js` | Multi-source company data module - ANAF + CUIScan (company details) + CUIFirma (search) |
+| `scraper/demoanaf.js` | CLI entry point for anaf.js (thin wrapper) |
+| `scraper/api.js` | Peviitor API operations module - query, delete, upsert jobs + standalone commands |
+| `scraper/validate-jobs.js` | Manual deep validator (content-aware); thin CLI wrapper over `scraper/job-validator.js` |
+| `scraper/job-validator.js` | Shared validation primitives: `validateByHead`, `validateByContent`, `DEFAULT_EXPIRED_KEYWORDS` |
+| `scraper/markdown-generator.js` | Generates `docs/jobs.md` with company info and all scraped jobs |
+| `tests/unit/index.test.js` | Unit tests for searchANOFM, mapToJobModel, transformJobsForSOLR |
 | `tests/unit/company.test.js` | Unit tests for validateAndGetCompany and fallback caching |
-| `tests/unit/solr.test.js` | Unit tests for SOLR query, upsert, delete operations |
-| `tests/unit/demoanaf.test.js` | Unit tests for ANAF search and company retrieval |
-| `tests/integration/workflow.test.js` | Live integration tests - ANAF + SOLR |
-| `tests/e2e/scraper.test.js` | End-to-end tests with real ANOFM API |
+| `tests/unit/api.test.js` | Unit tests for api.js - query, upsert, delete, HTTP error handling |
+| `tests/unit/demoanaf.test.js` | Unit tests for anaf.js - ANAF search and company retrieval |
+| `tests/integration/workflow.test.js` | Live integration tests - ANAF + Peviitor API |
+| `tests/e2e/scraper.test.js` | End-to-end tests with real scraping pipeline |
 | `tests/consistency/public.test.js` | Verifies repo is public on GitHub |
 | `tests/consistency/repo.test.js` | Verifies branch, Pages, secrets, workflow files |
 | `tests/consistency/topics.test.js` | Verifies required repo topics |
@@ -151,11 +145,12 @@ generateJobsMarkdown() → docs/jobs.md
 
 ## API Endpoints
 
-- **ANOFM API**: `https://anofm.ro/api/entity/vw_public_job_posting` - Public job postings filtered by CIF
 - **DemoANAF Search**: `https://demoanaf.ro/api/search?q=BRAND` - Search companies by name/brand
 - **DemoANAF Company**: `https://demoanaf.ro/api/company/:cui` - Get company details by CIF
-- **Peviitor API**: `https://api.peviitor.ro/v1/company/`
-- **Solr**: `https://solr.peviitor.ro/solr/job` (auth: via `SOLR_AUTH` environment variable)
+- **CUIScan**: `https://cuiscan.ro/api.php?action=company&cui=CIF` - Company details fallback
+- **CUIFirma Search**: `https://cuifirma.ro/api/search?q=BRAND` - Search fallback
+- **Peviitor API**: `https://api.peviitor.ro/v1/` — all job and company operations go through this API
+- **ANOFM**: `https://mediere.anofm.ro/api/entity/vw_public_job_posting` — POST cu paginare, filtrat după `employer_tax_code` (CIF)
 
 ## Rate Limiting & Politeness
 
@@ -163,11 +158,11 @@ The scraper is intentionally slow to be a good citizen:
 
 | Setting | Value | Where |
 |---------|-------|-------|
-| Delay between pages | 1000 ms | `index.js` — `sleep(1000)` in `scrapeAllListings()` |
-| Request timeout | 10000 ms | `index.js` — `TIMEOUT` constant |
-| ANAF retries | 3 attempts, 2s exponential backoff | `src/anaf.js` |
+| Request timeout | 10000 ms | `scraper/anaf.js` — `TIMEOUT_MS` constant |
+| ANAF fallback | 1 attempt ANAF → CUIScan | `scraper/anaf.js` — no retries, just fallback |
 | Concurrency | 1 (sequential) | No `Promise.all` for paginated fetches |
 | User-Agent | `job_seeker_ro_spider` | Identifies the scraper in server logs |
+| Page delay | 1000 ms between pages | `scraper/index.js` — `sleep(1000)` |
 
 Derived scrapers should keep these defaults unless the target site explicitly permits otherwise.
 
@@ -175,7 +170,6 @@ Derived scrapers should keep these defaults unless the target site explicitly pe
 
 | Variable | Description |
 |----------|-------------|
-| `SOLR_AUTH` | SOLR credentials in format `user:password` |
 | `GITHUB_REPOSITORY` | Used by consistency tests — format: `owner/repo` |
 | `GITHUB_TOKEN` | GitHub API token for consistency tests |
 
@@ -184,36 +178,36 @@ Derived scrapers should keep these defaults unless the target site explicitly pe
 ## Standalone Commands
 
 ```bash
-# Verify jobs in SOLR by CIF
-node solr.js <CIF>
+# Query jobs in SOLR by CIF
+node scraper/api.js <CIF>
 
 # Extract existing jobs from SOLR by CIF
-node solr.js extract <CIF>
+node scraper/api.js extract <CIF>
 
 # Query company in SOLR
-node solr.js company <search_term>
+node scraper/api.js company <search_term>
 
-# Get company details from ANAF by CIF
-node demoanaf.js <CIF>
+# Get company details from ANAF/CUIScan by CIF
+node scraper/demoanaf.js <CIF>
 
-# Search companies in ANAF by brand
-node demoanaf.js search <brand>
+# Search companies in ANAF/CUIFirma by brand
+node scraper/demoanaf.js search <brand>
 
 # Validate job URLs from SOLR by CIF (check active/expired)
-node validate-jobs.js <CIF>
+node scraper/validate-jobs.js <CIF>
 
 # Validate a single job URL
-node validate-jobs.js url <url>
+node scraper/validate-jobs.js url <url>
 
 # Delete expired jobs from SOLR by CIF
-node validate-jobs.js <CIF> --delete
+node scraper/validate-jobs.js <CIF> --delete
 ```
 
 ## Testing
 
 This project requires multiple levels of testing:
 
-1. **Unit Tests** - Test individual modules (solr.js, company.js) in isolation
+1. **Unit Tests** - Test individual modules (api.js, company.js, anaf.js) in isolation
 2. **Integration Tests** - Test API interactions (ANAF, Peviitor, SOLR) in `/tests/integration` folder
 3. **E2E Tests** - Test full workflow in `/tests/e2e` folder
 
@@ -232,4 +226,4 @@ All temporary/scratch files must be placed in `tmp/` inside the project root (ne
 - [x] Write Unit Tests for all modules (#3)
 - [x] Write Integration Tests in separate folder (#4)
 - [x] Write E2E automated tests in separate folder (#5)
-- [x] Write Unit/Component/E2E tests for index.js
+- [ ] Write Unit/Component/E2E tests for index.js

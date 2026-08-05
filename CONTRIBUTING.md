@@ -2,32 +2,18 @@
 
 Thank you for your interest in contributing!
 
-## 🌱 This Repo Is a Derived Scraper
+## 📐 Derived Scraper
 
-This scraper is derived from the [EPAM template](https://github.com/sebiboga/epam-systems-international-srl-nodejs-scraper) and targets **SOBIS TURISM** (CIF 794572).
+This repo is a **derived scraper** for SC TRANSILVANIA HOLIDAY TRAVELS SRL (SOBIS TURISM), built on the pattern established by the [EPAM nodejs template](https://github.com/sebiboga/epam-systems-international-srl-nodejs-scraper). When the template changes, relevant updates should be applied here — the `automation-template-sync-check.yml` workflow tracks version drift.
 
-**All company-specific identity lives in `config/company.json`.**
+For the full derivation playbook, see the template's [AI-DERIVATION-GUIDE.md](https://github.com/sebiboga/epam-systems-international-srl-nodejs-scraper/blob/main/ai/AI-DERIVATION-GUIDE.md).
 
 ## Development Setup
 
 ```bash
-# Clone the repo
-git clone https://github.com/sebiboga/sobis-turism-nodejs-scraper.git
-
-# Install dependencies
 npm install
-
-# Run tests
 npm test
 ```
-
-## Code Style
-
-- Use ES6+ modules (`type: module` in `package.json`)
-- Add tests for new features in the matching `tests/<level>/` folder
-- Ensure all tests pass before submitting PR
-- Update relevant `.md` files when adding new files
-- Reference a GitHub issue in every commit (see [ISSUES.md](ISSUES.md))
 
 ## Reporting Issues
 
@@ -35,7 +21,6 @@ Open a [GitHub Issue](https://github.com/sebiboga/sobis-turism-nodejs-scraper/is
 - Clear description of the problem
 - Steps to reproduce
 - Expected vs actual behavior
-- Environment details (Node version, OS)
 
 ## License
 
