@@ -5,6 +5,6 @@
   "status": "activ",
   "location": ["Sibiu"],
   "website": ["https://www.sobisturism.ro"],
-  "career": [],
+  "career": ["https://www.sobisturism.ro"],
   "scraperFile": "https://github.com/peviitor-scrapers/sobis-turism-nodejs-scraper/actions/workflows/job-seeker-ro-spider.yml"
 }
