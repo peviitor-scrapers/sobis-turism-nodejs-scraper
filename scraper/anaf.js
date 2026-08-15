@@ -87,7 +87,8 @@ async function fetchFromAnaf(cif) {
   if (!res.ok) throw new Error(`ANAF API error: ${res.status}`);
   const json = await res.json();
   if (json.success === false) throw new Error(json.error?.message || "ANAF returned error");
-  return json.data || null;
+  if (!json.data || !json.data.name) throw new Error("ANAF returned no company data");
+  return json.data;
 }
 
 async function searchFromAnaf(brandName) {
