@@ -1,4 +1,4 @@
-# TRANSILVANIA HOLIDAY TRAVELS SRL
+# SC TRANSILVANIA HOLIDAY TRAVELS SRL
 
 ## Company Info
 
@@ -7,11 +7,11 @@
 | CIF | 794572 |
 | Brand | SOBIS |
 | Status | activ |
-| Location | JUD. SIBIU, MUN. SIBIU, CAL. DUMBRĂVII, NR.101 |
+| Location | Sibiu |
 | Website | [https://www.sobisturism.ro](https://www.sobisturism.ro) |
 | Careers | [https://www.sobisturism.ro](https://www.sobisturism.ro) |
-| Last Scraped | 2026-08-17 |
+| Last Scraped | 2026-08-18 |
 
 ## Current Job Listings (0)
 
-_Generated: 2026-08-17T06:35:59.654Z_
+_Generated: 2026-08-18T06:28:04.165Z_
