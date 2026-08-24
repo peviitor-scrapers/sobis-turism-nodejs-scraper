@@ -10,8 +10,8 @@
 | Location | Sibiu |
 | Website | [https://www.sobisturism.ro](https://www.sobisturism.ro) |
 | Careers | [https://www.sobisturism.ro](https://www.sobisturism.ro) |
-| Last Scraped | 2026-08-23 |
+| Last Scraped | 2026-08-24 |
 
 ## Current Job Listings (0)
 
-_Generated: 2026-08-23T06:25:46.827Z_
+_Generated: 2026-08-24T06:39:07.373Z_
