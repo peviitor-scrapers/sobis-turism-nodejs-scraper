@@ -10,8 +10,8 @@
 | Location | JUD. SIBIU, MUN. SIBIU, CAL. DUMBRĂVII, NR.101 |
 | Website | [https://www.sobisturism.ro](https://www.sobisturism.ro) |
 | Careers | [https://www.sobisturism.ro](https://www.sobisturism.ro) |
-| Last Scraped | 2026-11-20 |
+| Last Scraped | 2026-11-21 |
 
 ## Current Job Listings (0)
 
-_Generated: 2026-11-20T14:39:31.956Z_
+_Generated: 2026-11-21T13:56:06.922Z_
