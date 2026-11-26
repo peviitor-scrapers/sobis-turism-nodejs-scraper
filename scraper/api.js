@@ -123,6 +123,12 @@ export async function querySOLR(cif) {
     headers: { "User-Agent": "job_seeker_ro_spider" }
   });
 
+  // api.peviitor.ro answers 404 {"error":"No jobs for CIF ..."} when the company has no jobs indexed yet:
+  // that is an empty result, not a failure.
+  if (res.status === 404) {
+    return { numFound: 0, docs: [] };
+  }
+
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`API jobs query error: ${res.status} - ${text}`);
